@@ -9,7 +9,7 @@
 - バックエンドJava Spring Boot 3堅牢なRESTful APIの設計とビジネスロジックの実装。
 - データベースPostgreSQLのクエリ出力とSQL操作の習熟。
 - インフラAWS EC2 (Amazon Linux 2023)本番環境における Linux サーバー管理とデプロイ経験。
-
+- ｔ
 ## ⚙️ 環境構築手順 (Getting Started)プロジェクトをローカル環境で起動するための手順を記載します。
 1. プリセット (Prerequisites)Java SDK (21 LTS 推奨)Node.js & npm/yarnMariaDB サーバー（ローカルまたは開発用インスタンス）
 2. バックエンド (Java) の起動プロジェクトをクローンします:Bashgit clone [GitHubリポジトリURL]
