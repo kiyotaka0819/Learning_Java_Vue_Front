@@ -1,0 +1,50 @@
+{
+  "home": {
+    "title": "ようこそ",
+    "description": "ポートフォリオサイトへ"
+  },
+  "apps":{
+    "title": "アプリ一覧",
+    "items": [
+      {
+        "name": "お天気取得アプリ",
+        "description": "外部API連携、データ加工、条件分岐を活用した天気情報表示アプリ。",
+        "tech": ["Vue3", "API連携", "JSON"],
+        "url": "https://kiyotaka0819.github/"
+        
+      },
+      {
+        "name": "ストップウォッチアプリ",
+        "description": "Composition API、ref関数、computed関数を活用したアプリ。",
+        "tech": ["Vue3", "Compiosition API", "ref"],
+        "url": "https://kiyotaka0819.github/"
+      },
+       {
+        "name": "ギター練習アプリ",
+        "description": "Composition API、ref関数、computed関数を活用したアプリ。",
+        "tech": ["JavaScript", "GoogleAppsScripts", "SpreadSheets"],
+        "url": "https://kiyotaka0819.github.io/GuitarPractice_JavaScript/"
+      }
+      ]
+      },
+  "portfolio": {
+    "title": "ポートフォリオ",
+    "links":[
+      {
+        "name": "GitHub",
+        "url": "https://github.com/" 
+      },
+      {
+        "name": "Qiita",
+        "url": "https://qiita.com/"
+      }
+    ]
+  },
+  "about": {
+    "title": "About Me",
+    "name": "天本",
+    "bio": "システムエンジニアとして、勉強中です。",
+    "skills": ["Vue.js", "JavaScript", "HTML/CSS", "Java", "Python", "PostgreSQL"]
+  }
+}
+ 
