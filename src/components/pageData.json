@@ -10,8 +10,8 @@
         "name": "お天気取得アプリ",
         "description": "外部API連携、データ加工、条件分岐を活用した天気情報表示アプリ。",
         "tech": ["Vue3", "API連携", "JSON"],
-        "url": "https://kiyotaka0819.github/"
-        
+        "url": "https://kiyotaka0819.github/",
+        "to": "/weather"
       },
       {
         "name": "ストップウォッチアプリ",

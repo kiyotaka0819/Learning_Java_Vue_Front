@@ -6,63 +6,20 @@
     </header>
     
     <div class="menu">
-      <button @click="clickMenu('home')">ホーム</button>
-      <button @click="clickMenu('apps')">アプリ</button>
-      <button @click="clickMenu('portfolio')">ポートフォリオ</button>
-      <button @click="clickMenu('about')">ABOUT ME</button>
+      <button @click="$router.push('/')">ホーム</button>
+      <button @click="$router.push('/apps')">アプリ</button>
+      <button @click="$router.push('/portfolio')">ポートフォリオ</button>
+      <button @click="$router.push('/about')">ABOUT ME</button>
     </div>
     
     <div class="content">
-      <div v-if="currentPage === 'home'">
-        <h2>{{ pageData.home.title }}</h2>
-        <p>{{ pageData.home.description }}</p>
-      </div>
-
-      <div v-if="currentPage === 'apps'">
-        <h2>{{ pageData.apps.title }}</h2>
-        <AppCard
-        v-for="app in pageData.apps.items"
-        :key="app.name"
-        :name="app.name"
-        :description="app.description"
-        :tech="app.tech"
-        :url="app.url"
-        />
-      </div>
-      
-      <div v-if="currentPage === 'portfolio'">
-        <h2>{{ pageData.portfolio.title }}</h2>
-        <PortfolioLink
-        v-for="link in pageData.portfolio.links"
-        :key="link.name"
-        :name="link.name"
-        :url="link.url"
-        />
-      </div>
-      
-      <div v-if="currentPage === 'about'">
-        <h2>{{ pageData.about.title }}</h2>
-        <p>名前: {{ pageData.about.name }}</p>
-        <p>{{ pageData.about.bio }}</p>
-        <div>
-          <h3>スキル</h3>
-          <p>{{ pageData.about.skills.join(' / ' )}}</p>
-        </div>
-      </div>
+      <router-view />
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import pageData from './components/pageData.json'
-import AppCard from './components/AppCard.vue'
-import PortfolioLink from './components/PortfolioLink.vue'
-const currentPage = ref('home')
-
-const clickMenu = (page) => {
-  currentPage.value = page
-}
+  import { ref } from 'vue'
 </script>
 
 <style scoped>
