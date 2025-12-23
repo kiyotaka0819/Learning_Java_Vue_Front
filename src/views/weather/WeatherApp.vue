@@ -43,35 +43,87 @@ fetch(`https://api.open-meteo.com/v1/forecast?latitude=${pref.lat}&longitude=${p
     weatherText(code){
       return weatherMap[code] || '❓(不明)';
     },
-    groupByDate(hourly) {
+groupByDate(hourly) {
   const grouped = {};
   const now = new Date();
   const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+  const weekDays = ["日", "月", "火", "水", "木", "金", "土"];
 
   hourly.time.forEach((datetime, i) => {
     const dateObj = new Date(datetime);
+    if (dateObj.getTime() < todayStart) return;
 
-    if (dateObj.getTime() < todayStart) {
-      return; 
-    }
-
-    const month = dateObj.getMonth() + 1;
-    const day = dateObj.getDate();
-    const weekDays = ["日", "月", "火", "水", "木", "金", "土"];
-    const dayOfWeek = weekDays[dateObj.getDay()];
-    const dateKey = `${month}月${day}(${dayOfWeek})`;
+    const dateKey = `${dateObj.getMonth() + 1}月${dateObj.getDate()}日(${weekDays[dateObj.getDay()]})`;
 
     if (!grouped[dateKey]) {
-      grouped[dateKey] = [];
+      grouped[dateKey] = {
+        summary: { maxTemp: -99, minTemp: 99, totalPrecip: 0, maxPrecip: 0, tempSum: 0, count: 0 },
+        details: []
+      };
     }
-    grouped[dateKey].push({
-      time: datetime,
+
+    const temp = hourly.temperature_2m[i];
+    const precip = hourly.precipitation[i];
+    const s = grouped[dateKey].summary;
+
+    s.maxTemp = Math.max(s.maxTemp, temp);
+    s.minTemp = Math.min(s.minTemp, temp);
+    s.totalPrecip += precip;
+    s.maxPrecip = Math.max(s.maxPrecip, precip);
+    s.tempSum += temp;
+    s.count++;
+
+    grouped[dateKey].details.push({
       hour: dateObj.getHours(),
-      temperature: hourly.temperature_2m[i],
-      precipitation: hourly.precipitation[i],
-      weathercode: hourly.weathercode[i]
+      temp: temp,
+      precip: precip,
+      code: hourly.weathercode[i]
     });
   });
+
+  Object.values(grouped).forEach(day => {
+    // 基礎計算
+    day.summary.avgTemp = (day.summary.tempSum / day.summary.count).toFixed(1);
+    day.summary.totalPrecip = parseFloat(day.summary.totalPrecip).toFixed(1);
+
+    // 【服装判定】イッチのこだわりロジック
+    const month = now.getMonth() + 1;
+    let targetTemp = day.summary.avgTemp;
+    if (month >= 5 && month <= 9) {
+      targetTemp = day.summary.maxTemp;
+      day.summary.clothesNote = "※最高気温基準";
+    } else if (month >= 11 || month <= 3) {
+      targetTemp = day.summary.minTemp;
+      day.summary.clothesNote = "※最低気温基準";
+    } else {
+      day.summary.clothesNote = "※平均気温基準";
+    }
+    day.summary.clothes = this.checkClothes(targetTemp);
+
+    // 【傘と雨の様子】
+    const mp = day.summary.maxPrecip;
+    
+    // 傘の判定
+    if (mp === 0) {
+      day.summary.umbrella = "✨ 傘なしOK";
+    } else if (mp < 1.0) {
+      day.summary.umbrella = "🌂 折りたたみ傘推奨";
+    } else {
+      day.summary.umbrella = "☔ 長傘が必要";
+    }
+
+    // 雨の強さ（ここが抜けてた！）
+    if (mp === 0) {
+      day.summary.precipText = "降水なし";
+    } else if (mp < 2) {
+      day.summary.precipText = "パラつく";
+    } else if (mp < 10) {
+      day.summary.precipText = "本降り";
+    } else {
+      day.summary.precipText = "激しい雨";
+    }
+  });
+
   return grouped;
 }
   },
@@ -81,148 +133,84 @@ fetch(`https://api.open-meteo.com/v1/forecast?latitude=${pref.lat}&longitude=${p
 }
 </script>
 <template>
-  <div>
-    <h1>{{ selectedPrefecture }}の時間ごとの気温と降水量</h1>
-    <select v-model="selectedPrefecture" @change="fetchWeather">
-      <option v-for="pref in prefectures" :key="pref.name" :value="pref.name">
-        {{ pref.name }}
-      </option>
-    </select>
-    <div v-if="groupedWeather">
-      <div v-for="(times,date) in groupedWeather" :key="date" style="margin-bottom: 30px;">
+  <div class="weather-container">
+    <div v-for="(data, date) in groupedWeather" :key="date" class="day-card">
+      <div class="day-header">
         <h2>{{ date }}</h2>
-        <table border="1" cellspacing="0" cellpadding="5" style="width:100%; text-align: center;">
-          <thead>
-            <tr>
-              <th>時間</th>
-              <th>天気</th>
-              <th>気温</th>
-              <th>服装</th>
-              <th>降水量</th>
-            </tr>
-          </thead>
-            <tbody>
-              <tr v-for="item in times" :key="item.time">
-                <td>{{ item.hour }}時</td>
-                <td>{{ weatherText(item.weathercode )}}</td>
-                <td>{{ item.temperature }}℃</td>
-                <td>{{ checkClothes(item.temperature) }}</td>
-                <td>{{ item.precipitation }}mm</td>
-              </tr>
-            </tbody>
-          </table>
+        
+        <div class="advice-box">
+          <div class="advice-item">👕 {{ data.summary.clothes }}</div>
+          <div class="advice-item">{{ data.summary.umbrella }}</div>
         </div>
-     </div>
-     <div v-else-if="error">
-       <p style="color: red">{{ error }}</p>
+
+        <div class="summary-grid">
+          <div class="summary-item">最高: <span class="max">{{ data.summary.maxTemp }}℃</span></div>
+          <div class="summary-item">最低: <span class="min">{{ data.summary.minTemp }}℃</span></div>
+          <div class="summary-item">雨の様子: {{ data.summary.precipText }}</div>
+          <div class="summary-item">平均: {{ data.summary.avgTemp }}℃</div>
+        </div>
       </div>
-    <div v-else>
-      <p>データを取得中..</p>
+
+      <div class="hourly-scroll">
+        <div v-for="h in data.details" :key="h.hour" class="hourly-item">
+          <div class="time">{{ h.hour }}時</div>
+          <div class="icon">{{ weatherText(h.code) }}</div>
+          <div class="temp">{{ h.temp }}℃</div>
+          <div v-if="h.precip > 0" class="precip-small">{{ h.precip }}mm</div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <style scoped>
-body, div, select, table {
-  font-family: -apple-system,BlinkMacSystemFont, "Segoe uI", Roboto, Oxygen,
-    Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
-    color: #333;
-    background-color:#f9f9f9;
+.day-card {
+  background: white;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  padding: 15px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
 }
-h1{
-  text-align: center;
-  margin-bottom: 30px;
-  font-weight: 700;
-  font-size: 2rem;
-  color: #2c3e50;
-}
-h2{
-  font-weight: 600;
-  margin-top: 40px;
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
   margin-bottom: 15px;
-  color: #34495e;
-}
-select{
-  display: block;
-  margin: 0 auto 30px auto;
-  padding: 8px 15px;
-  font-size: 1rem;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  background-color: #fff;
-  cursor: pointer;
-  transition: border-color 0.3s ease;
-}
-select:hover, select:focus{
-  border-color: #007BFF;
-  outline: none;
-}
-table{
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0 8 px;
-  background-color: #fff;
-  box-shadow: 0 2px 8px rgba(0,0,0,0,1);
+  background: #f8f9fa;
+  padding: 10px;
   border-radius: 8px;
-  overflow: hidden;
 }
-th{
-  background-color: #007BFF;
-  color:white;
-  padding: 12px 15px;
-  font-weight:600;
-  text-align: center;
-  user-select: none;
-}
-td{
-  padding: 12px 15px;
-  text-align: center;
-  border-bottom: 1px solid #e1e4e8;
-}
-tbody tr:last-child td:first-child{
-  border-bottom-left-radius: 8px;
-}
-tbody tr:last-child td:last-child{
-  border-bottom-right-radius:8px;
-}
-tbody tr:hover{
-  background-color: #e6f2ff;
-  transition: background-color 0.3s ease;
-}
+.max { color: #ff4d4d; font-weight: bold; }
+.min { color: #4d79ff; font-weight: bold; }
 
-@media(max-width: 600px){
-  table, thead, tbody, th, td, tr{
-    display: block;
-    thead{
-      display: none;
-    }
-    tr{
-      background: #fff;
-      margin-bottom: 15px;
-      border-radius: 8px;
-      box-shadow: 0 1px 4px rgba(0,0,0,0,1);
-    }
-    td{
-      border: none;
-      padding-left: 50%;
-      position: relative;
-      text-align: left;
-      font-size:0.9rem;
-    }
-    td::before{
-      position: absolute;
-      top: 50%;
-      left: 15px;
-      transform: translateY(50%);
-      white-space: nowrap;
-      font-weight:600;
-      color: #555;
-    }
-    td:nth-of-type(1)::before { content: "時間"; }
-    td:nth-of-type(2)::before { content: "天気"; }
-    td:nth-of-type(3)::before { content: "気温"; }
-    td:nth-of-type(4)::before { content: "服装"; }
-    td:nth-of-type(5)::before { content: "降水量"; }
-  }
+.hourly-scroll {
+  display: flex;
+  overflow-x: auto; /* 横スクロールを許可 */
+  gap: 15px;
+  padding-bottom: 10px;
+  border-top: 1px solid #eee;
+  padding-top: 10px;
+}
+.hourly-item {
+  min-width: 60px;
+  text-align: center;
+  flex-shrink: 0;
+}
+.time { font-size: 0.8rem; color: #666; }
+.temp { font-weight: bold; }
+
+.advice-box {
+  display: flex;
+  justify-content: space-around;
+  background: #e6f7ff;
+  border-radius: 8px;
+  padding: 10px;
+  margin-bottom: 15px;
+  font-weight: bold;
+  border: 1px solid #91d5ff;
+}
+.precip-small {
+  font-size: 0.7rem;
+  color: #1890ff;
 }
 </style>
