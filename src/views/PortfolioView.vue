@@ -12,6 +12,5 @@
 
 <script setup>
 import pageData from '../components/pageData.json'
-// コンポーネントの場所が components フォルダならこれで合っとる
 import PortfolioLink from '../components/PortfolioLink.vue' 
 </script>

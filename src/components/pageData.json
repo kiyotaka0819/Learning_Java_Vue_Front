@@ -1,16 +1,27 @@
 {
   "home": {
     "title": "ようこそ",
-    "description": "ポートフォリオサイトへ"
+    "description": "天本のポートフォリオサイトへ",
+    "info": "このサイトは、Vue.js や Java を用いた学習成果を公開するためのWebアプリケーションです。\n単に動くものを作るだけでなく、保守性と可変性を意識した開発を心がけています。",
+    "concepts": [
+      {
+        "title": "フロントエンド",
+        "detail": "Vue3 (Composition API) によるコンポーネントの再利用性と、ユーザー体験を考慮したUI設計。"
+      },
+      {
+        "title": "バックエンド",
+        "detail": "Java / Spring Boot を用いた堅牢なAPI開発と、PostgreSQLによるDB設計。"
+      }
+    ]
   },
   "apps":{
     "title": "アプリ一覧",
     "items": [
       {
         "name": "お天気取得アプリ",
-        "description": "外部API連携、データ加工、条件分岐を活用した天気情報表示アプリ。",
-        "tech": ["Vue3", "API連携", "JSON"],
-        "url": "https://kiyotaka0819.github/",
+        "description": "実生活での利便性を追求し、APIデータを加工。\n季節ごとに服装判定基準を切り替えるロジックを実装しました。",
+        "tech": ["Vue3", "API連携", "JavaScript", "JSON"],
+        "url": "https://kiyotaka0819.github.io/Learning_Java_Vue_Front/weather",
         "to": "/weather"
       },
       {
@@ -19,10 +30,10 @@
         "tech": ["Vue3", "Compiosition API", "ref"],
         "url": "https://kiyotaka0819.github/"
       },
-       {
+      {
         "name": "ギター練習アプリ",
-        "description": "Composition API、ref関数、computed関数を活用したアプリ。",
-        "tech": ["JavaScript", "GoogleAppsScripts", "SpreadSheets"],
+        "description": "自身の練習管理を効率化するため、Google Apps Script (GAS) を介してスプレッドシートをDBとして活用。",
+        "tech": ["JavaScript", "GAS", "スプレッドシート", "Vue3"],
         "url": "https://kiyotaka0819.github.io/GuitarPractice_JavaScript/"
       }
       ]
@@ -40,11 +51,20 @@
       }
     ]
   },
-  "about": {
+"about": {
     "title": "About Me",
     "name": "天本",
-    "bio": "システムエンジニアとして、勉強中です。",
-    "skills": ["Vue.js", "JavaScript", "HTML/CSS", "Java", "Python", "PostgreSQL"]
+    "bio": "フルスタックシステムエンジニアを目指して日々学習中です。可変性と、ユーザーの利便性を両立させる開発を大切にしています。",
+    "skills": ["Vue.js", "JavaScript", "HTML/CSS", "Java", "Python", "PostgreSQL"],
+    "learning": [
+      {
+        "category": "Java / バックエンド",
+        "detail": "実務にて、Vueのサーバーサイド連携としてSpring Bootを用いる。現在はフロントエンド側としてJavaとの連携を学習中"
+      },
+      {
+        "category": "開発のモットー",
+        "detail": "保守性の高いコードを書くため、共通化やデータの構造化（JSON管理）を意識した設計を心がけています。"
+      }
+    ]
   }
 }
- 
