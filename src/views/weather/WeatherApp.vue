@@ -337,6 +337,7 @@ select { padding: 8px 16px; border-radius: 8px; border: 1px solid #d9d9d9; font-
   min-width: 60px;
   text-align: center;
   flex-shrink: 0;
+  white-space: nowrap;
 }
 .hourly-item .icon {
   font-size: 0.8rem;

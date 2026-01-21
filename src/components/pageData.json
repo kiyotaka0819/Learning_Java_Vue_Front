@@ -25,16 +25,24 @@
         "to": "/weather"
       },
       {
-        "name": "ストップウォッチアプリ",
-        "description": "Composition API、ref関数、computed関数を活用したアプリ。",
-        "tech": ["Vue3", "Compiosition API", "ref"],
-        "url": "https://kiyotaka0819.github/"
+        "name": "AI献立アドバイザー",
+        "description": "Gemini APIを活用し、現在の天候や気温から最適なレシピを提案するAIアプリ。\nプロンプトエンジニアリングを用いて、実用的な出力を実現しました。",
+        "tech": ["Vue3", "Gemini API", "Google Generative AI SDK", "Web API"],
+        "url": "https://kiyotaka0819.github.io/Learning_Java_Vue_Front/recipe",
+        "to": "/recipe"
       },
       {
         "name": "ギター練習アプリ",
         "description": "自身の練習管理を効率化するため、Google Apps Script (GAS) を介してスプレッドシートをDBとして活用。",
         "tech": ["JavaScript", "GAS", "スプレッドシート", "Vue3"],
         "url": "https://kiyotaka0819.github.io/GuitarPractice_JavaScript/"
+      },
+      {
+        "name": "メトロノームアプリ",
+        "description": "自身の練習管理を効率化するため、Google Apps Script (GAS) を介してスプレッドシートをDBとして活用。",
+        "tech": ["JavaScript", "GAS", "スプレッドシート", "Vue3"],
+        "url": "https://kiyotaka0819.github.io/Learning_Java_Vue_Front/metronome",
+        "to": "/metronome"
       }
       ]
       },

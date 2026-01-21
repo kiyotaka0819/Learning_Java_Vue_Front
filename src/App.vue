@@ -1,3 +1,7 @@
+<script setup>
+  import { ref } from 'vue'
+</script>
+
 <template>
   <div class="container">
     <header>
@@ -17,10 +21,6 @@
     </div>
   </div>
 </template>
-
-<script setup>
-  import { ref } from 'vue'
-</script>
 
 <style scoped>
 .container {

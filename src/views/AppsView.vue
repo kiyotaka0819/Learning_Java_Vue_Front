@@ -1,3 +1,8 @@
+<script setup>
+import pageData from '../components/pageData.json'
+import AppCard from '../components/AppCard.vue'
+</script>
+
 <template>
   <div>
     <h2>{{ pageData.apps.title }}</h2>
@@ -12,8 +17,3 @@
     />
   </div>
 </template>
-
-<script setup>
-import pageData from '../components/pageData.json'
-import AppCard from '../components/AppCard.vue'
-</script>

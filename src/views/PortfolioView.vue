@@ -1,3 +1,8 @@
+<script setup>
+import pageData from '../components/pageData.json'
+import PortfolioLink from '../components/PortfolioLink.vue' 
+</script>
+
 <template>
   <div>
     <h2>{{ pageData.portfolio.title }}</h2>
@@ -9,8 +14,3 @@
     />
   </div>
 </template>
-
-<script setup>
-import pageData from '../components/pageData.json'
-import PortfolioLink from '../components/PortfolioLink.vue' 
-</script>

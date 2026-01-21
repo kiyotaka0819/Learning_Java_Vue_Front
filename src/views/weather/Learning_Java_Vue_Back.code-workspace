@@ -1,0 +1,12 @@
+{
+	"folders": [
+		{
+			"path": "../../../../Learning_Java_Vue_Back"
+		},
+		{
+			"name": "Learning_Java_Vue_Front",
+			"path": "../../.."
+		}
+	],
+	"settings": {}
+}
