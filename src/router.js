@@ -6,6 +6,7 @@ import PortfolioView from './views/PortfolioView.vue'
 import AboutView from './views/AboutView.vue'
 import RecipeApp from './views/recipe/RecipeApp.vue'
 import MetronomeApp from './views/metronome/MetronomeApp.vue'
+import CalculatorApp from './views/calculator/CalculatorApp.vue'
 
 /**
  * ルーティング定義
@@ -28,7 +29,9 @@ const routes = [
   //  レシピアプリ画面
   { path: '/recipe', component: RecipeApp },
   // メトロノーム画面
-  { path: '/metronome', component: MetronomeApp }
+  { path: '/metronome', component: MetronomeApp },
+  // 電卓画面
+  { path: '/calculator', component: CalculatorApp },
 ]
 
 

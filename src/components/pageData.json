@@ -39,10 +39,17 @@
       },
       {
         "name": "メトロノームアプリ",
-        "description": "自身の練習管理を効率化するため、Google Apps Script (GAS) を介してスプレッドシートをDBとして活用。",
-        "tech": ["JavaScript", "GAS", "スプレッドシート", "Vue3"],
+        "description": "自身の練習を効率化するため、Vueでリアクティブな動きを実現。JavaScriptで短波形でメトロノームの高低音を再現",
+        "tech": ["JavaScript", "Vue3"],
         "url": "https://kiyotaka0819.github.io/Learning_Java_Vue_Front/metronome",
         "to": "/metronome"
+      },
+      {
+        "name": "電卓アプリ",
+        "description": "リアクティブな数値の変化を管理する学習用アプリ",
+        "tech": ["JavaScript", "Vue3"],
+        "url": "https://kiyotaka0819.github.io/Learning_Java_Vue_Front/calculator",
+        "to": "/calculator"
       }
       ]
       },
