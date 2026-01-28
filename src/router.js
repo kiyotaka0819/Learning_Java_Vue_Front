@@ -7,6 +7,7 @@ import AboutView from './views/AboutView.vue'
 import RecipeApp from './views/recipe/RecipeApp.vue'
 import MetronomeApp from './views/metronome/MetronomeApp.vue'
 import CalculatorApp from './views/calculator/CalculatorApp.vue'
+import NewsReaderApp from './views/news_reader/NewsReaderApp.vue'
 
 /**
  * ルーティング定義
@@ -32,6 +33,8 @@ const routes = [
   { path: '/metronome', component: MetronomeApp },
   // 電卓画面
   { path: '/calculator', component: CalculatorApp },
+  // ニュースアプリ画面
+  { path: '/news_reader', component: NewsReaderApp }
 ]
 
 

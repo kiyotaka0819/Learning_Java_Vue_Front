@@ -1,0 +1,13 @@
+{
+    "genres": [
+  { "id": 0, "name": "主要ニュース", "url": "cat0.xml" },
+  { "id": 1, "name": "社会", "url": "cat1.xml" },
+  { "id": 2, "name": "文化・エンタメ", "url": "cat2.xml" },
+  { "id": 3, "name": "科学・医療", "url": "cat3.xml" },
+  { "id": 4, "name": "政治", "url": "cat4.xml" },
+  { "id": 5, "name": "経済", "url": "cat5.xml" },
+  { "id": 6, "name": "国際", "url": "cat6.xml" },
+  { "id": 7, "name": "スポーツ", "url": "cat7.xml" },
+  { "id": 9, "name": "最新15項目", "url": "cat9.xml" }
+    ]
+}
