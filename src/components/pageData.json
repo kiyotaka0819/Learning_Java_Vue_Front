@@ -50,6 +50,13 @@
         "tech": ["JavaScript", "Vue3"],
         "url": "https://kiyotaka0819.github.io/Learning_Java_Vue_Front/calculator",
         "to": "/calculator"
+      },
+      {
+        "name": "ニュースリーダーアプリ",
+        "description": "Vue3のComposition APIを使ったシンプルなニュースリーダーアプリ。NHKのジャンル別ニュースRSSを取得",
+        "tech": ["JavaScript","Vue3","Fetch APIによる非同期通信" ],
+        "url": "https://kiyotaka0819.github.io/Learning_Java_Vue_Front/news_reader",
+        "to": "/news_reader"
       }
       ]
       },
