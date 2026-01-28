@@ -2,16 +2,13 @@
   <div class="spinner"></div>
 </template>
 
-<script>
-export default {
-  name: 'Spinner', // このコンポーネントの名前
-};
+<script setup>
 </script>
 
-<style>
+<style scoped>
 .spinner {
-  width: 40px;
-  height: 40px;
+  width: 120px;
+  height: 120px;
   border: 4px solid gray;
   border-top-color: transparent;
   border-radius: 50%;
