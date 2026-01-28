@@ -29,35 +29,23 @@
 <style scoped>
 
 .link-item{
-
   margin-bottom: 20px;
-
   padding-bottom: 20px;
-
-  border-bottom: 1px solid #eee;
-
+  border-bottom: 1px solid rgba(128, 128, 128, 0.3);
 }
 
 
 
 .link-item:last-child{
-
   border-bottom: none;
-
 }
 
 a {
-
   color: #42b983;
-
   text-decoration: none;
-
 }
 
 a:hover{
-
   text-decoration: underline;
-
 }
-
 </style>

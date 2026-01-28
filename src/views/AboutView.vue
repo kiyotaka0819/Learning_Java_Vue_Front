@@ -38,16 +38,16 @@ import pageData from '../components/pageData.json'
 .profile-card, .learning-item {
   margin-bottom: 20px;
   padding: 20px;
-  border: 1px solid transparent;
+  border: 1px solid rgba(128, 128, 128, 0.2);
   transition: all 0.3s ease;
   border-radius: 12px;
-  background-color: #fcfcfc; /* ほんの少しグレー */
+  background-color: rgba(128, 128, 128, 0.05);
 }
 
 .profile-card:hover, .learning-item:hover {
-  background-color: #ffffff;
+  background-color: var(--bg-color); 
   transform: translateY(-5px);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
   border-color: #42b983;
 }
 
@@ -57,9 +57,10 @@ h3 {
   margin: 30px 0 15px;
 }
 
-.description-text, .learning-detail {
+.description-text, .learning-detail, .skills-list {
   white-space: pre-wrap;
-  color: #444;
+  color: inherit; 
+  opacity: 0.9;
   margin-top: 5px;
 }
 

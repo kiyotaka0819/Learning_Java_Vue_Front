@@ -36,12 +36,15 @@ defineProps({
   border-radius: 12px;
 }
 .app-item:hover {
-  background-color: #ffffff;
+  background-color: rgba(66, 185, 131, 0.1); 
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
   border-color: #42b983;
 }
 .app-item:last-child{
   border-bottom: none;
+}
+:global(.dark-mode) .app-item:hover {
+  background-color: rgba(255, 255, 255, 0.05);
 }
 a {
   color: #42b983;

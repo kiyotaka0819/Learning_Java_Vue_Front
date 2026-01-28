@@ -26,7 +26,7 @@ import pageData from '../components/pageData.json'
 .description-text {
   white-space: pre-wrap;
   line-height: 1.8;
-  color: #444;
+  color: inherit;
 }
 
 .concepts-grid {
@@ -34,20 +34,21 @@ import pageData from '../components/pageData.json'
   grid-template-columns: 1fr 1fr;
   gap: 20px;
   margin-top: 30px;
-  transition: all 0.3s ease;
-}
-
-.concepts-grid:hover {
-  background-color: #ffffff;
-  transform: translateY(-5px);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-  border-color: #42b983;
 }
 
 .concept-card {
   padding: 20px;
-  background: #fdfdfd;
-  border: 1px solid #eee;
+  background: rgba(128, 128, 128, 0.05); 
+  border: 1px solid rgba(128, 128, 128, 0.2); 
   border-radius: 8px;
+  color: inherit;
+  transition: all 0.3s ease;
+}
+
+.concept-card:hover {
+  background-color: var(--bg-color); 
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+  border-color: #42b983;
 }
 </style>
