@@ -8,6 +8,8 @@ import RecipeApp from './views/recipe/RecipeApp.vue'
 import MetronomeApp from './views/metronome/MetronomeApp.vue'
 import CalculatorApp from './views/calculator/CalculatorApp.vue'
 import NewsReaderApp from './views/news_reader/NewsReaderApp.vue'
+import Todos from './views/todos/Todos.vue'
+import WhiteboardTop from './views/whiteboard/WhiteboardTop.vue'
 
 /**
  * ルーティング定義
@@ -34,7 +36,11 @@ const routes = [
   // 電卓画面
   { path: '/calculator', component: CalculatorApp },
   // ニュースアプリ画面
-  { path: '/news_reader', component: NewsReaderApp }
+  { path: '/news_reader', component: NewsReaderApp },
+  // Todoアプリ画面
+  { path: '/todos', component: Todos },
+  // ホワイトボードアプリ画面
+  { path: '/whiteboard', component: WhiteboardTop }
 ]
 
 

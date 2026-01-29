@@ -57,6 +57,20 @@
         "tech": ["JavaScript","Vue3","Fetch APIによる非同期通信" ],
         "url": "https://kiyotaka0819.github.io/Learning_Java_Vue_Front/news_reader",
         "to": "/news_reader"
+      },
+      {
+        "name": "TODOアプリ",
+        "description": "Vue3のComposition APIを使ったTODOアプリ。Supabaseを用いたDB連携",
+        "tech": ["JavaScript","Vue3","SupabaseによるDB連携" ],
+        "url": "https://kiyotaka0819.github.io/Learning_Java_Vue_Front/todos",
+        "to": "/todos"
+      },
+      {
+        "name": "ホワイトボードアプリ",
+        "description": "Vue3のComposition APIを使った描画アプリ。Supabaseを用いたDB連携",
+        "tech": ["JavaScript","Vue3","SupabaseによるDB連携","canvaにて描画" ],
+        "url": "https://kiyotaka0819.github.io/Learning_Java_Vue_Front/whiteboard",
+        "to": "/whiteboard"
       }
       ]
       },
