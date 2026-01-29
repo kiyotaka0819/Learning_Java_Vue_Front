@@ -112,7 +112,7 @@ const saveFavorites = () => {
 </script>
 
 <template>
-  <div>
+  <div class="news-container">
     <h1>NHKニュースリーダー</h1>
     
     <!-- お気に入り機能 -->
@@ -183,12 +183,11 @@ const saveFavorites = () => {
 </template>
 
 <style scoped>
-body {
-  font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', Meiryo, sans-serif;
+.news-container {
   max-width: 800px;
   margin: 0 auto;
   padding: 20px;
-  color: #333;
+  color: inherit;
 }
 
 h1 {
@@ -205,7 +204,7 @@ h3 {
 a {
   font-weight: bold;
   text-decoration: none;
-  color: #007acc;
+  color: #52d398;
 }
 
 a:hover {
@@ -215,8 +214,9 @@ a:hover {
 .favorites {
   margin-bottom: 1.5em;
   padding: 1em;
-  background-color: #f5f5f5;
+  background-color: rgba(128, 128, 128, 0.1);
   border-radius: 8px;
+  color: inherit;
 }
 
 .fav-button {
@@ -257,8 +257,9 @@ a:hover {
 
 .genre-button {
   padding: 0.5em 1em;
-  background-color: #f1f1f1;
-  border: 1px solid #ddd;
+  background-color: rgba(128, 128, 128, 0.1);
+  color: inherit;
+  border: 1px solid rgba(128, 128, 128, 0.2);
   border-radius: 4px;
   cursor: pointer;
 }

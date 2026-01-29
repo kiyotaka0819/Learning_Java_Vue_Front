@@ -291,47 +291,84 @@ export default {
 
 <style scoped>
 /* 基本スタイル */
-.weather-container { max-width: 600px; margin: 0 auto; padding: 20px; font-family: sans-serif; }
-.header-section { text-align: center; margin-bottom: 25px; }
-.weather-title h1 { font-size: 1.6rem; color: #003a8c; margin-bottom: 10px; }
-
+.weather-container { 
+  max-width: 600px; 
+  margin: 0 auto; 
+  padding: 20px; 
+  font-family: sans-serif; 
+  color: inherit; 
+}
+.header-section {
+  text-align: center;
+  margin-bottom: 25px;
+}
+.weather-title h1 { 
+  font-size: 1.6rem; 
+  color: #1890ff; 
+  margin-bottom: 10px; 
+}
 /* 選択ツール */
-.selector-box { background: #f5f5f5; padding: 10px; border-radius: 12px; display: inline-block; }
-.select-label { font-weight: bold; margin-right: 8px; color: #555; }
-select { padding: 8px 16px; border-radius: 8px; border: 1px solid #d9d9d9; font-size: 1rem; cursor: pointer; }
-
+.selector-box { 
+  background: rgba(128, 128, 128, 0.1); 
+  padding: 10px; 
+  border-radius: 12px; 
+  display: inline-block; 
+}
+.select-label {
+  font-weight: bold;
+  margin-right: 8px;
+  color: #555;
+}
+select { 
+  padding: 8px 16px; 
+  border-radius: 8px; 
+  border: 1px solid rgba(128, 128, 128, 0.3); 
+  background: rgba(255, 255, 255, 0.9);
+  color: #333; 
+  font-size: 1rem; 
+}
 /* メインカード設定 */
 .day-card {
-  background: white; border-radius: 20px; margin-bottom: 24px; padding: 20px;
-  box-shadow: 0 10px 20px rgba(0,0,0,0.05); text-align: center;
+  background: rgba(128, 128, 128, 0.08);
+  color: inherit;
+  border-radius: 20px;
+  margin-bottom: 24px;
+  padding: 20px;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+  text-align: center;
+  border: 1px solid rgba(128, 128, 128, 0.1);
 }
-.today-highlight { border: 2px solid #91d5ff; background: #f0faff; }
+.today-highlight {
+  border: 2px solid #1890ff;
+  background: rgba(24, 144, 255, 0.1);
+}
 .tomorrow-highlight { border: 1px solid #f0f0f0; }
-
 .date-badge {
   display: inline-block; padding: 5px 15px; border-radius: 25px;
   background: #1890ff; color: white; font-weight: bold; margin-bottom: 18px;
 }
-
-/* アドバイスのデザイン */
-.advice-box {
-  display: flex; justify-content: space-around; background: white;
-  border-radius: 15px; padding: 15px; margin-bottom: 20px; border: 1px solid #e6f7ff;
-  font-weight: bold;
+.advice-box, .summary-grid {
+  background: rgba(0, 0, 0, 0.05);
+  color: inherit;
+  border: 1px solid rgba(128, 128, 128, 0.2);
+  border-radius: 12px;
+  padding: 15px;
+  margin-bottom: 20px;
 }
-.advice-box.sub { background: #f9f9f9; padding: 10px; border: none; font-size: 0.9rem; margin-top: 10px; }
-
-/* 統計グリッド */
-.summary-grid {
-  display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;
-  background: rgba(255,255,255,0.7); padding: 15px; border-radius: 12px; margin-bottom: 20px;
+.advice-box.sub { 
+  background: rgba(128, 128, 128, 0.1); 
+  border: none; 
 }
 .max { color: #ff4d4f; font-weight: bold; }
 .min { color: #1890ff; font-weight: bold; }
 
 /* 1時間毎のスクロール */
 .hourly-scroll {
-  display: flex; overflow-x: auto; gap: 15px; border-top: 1px solid #f0f0f0; padding-top: 15px;
+  display: flex; 
+  overflow-x: auto; 
+  gap: 15px; 
+  border-top: 1px solid rgba(128, 128, 128, 0.2); 
+  padding-top: 15px;
 }
 .hourly-item { 
   min-width: 60px;
@@ -346,17 +383,22 @@ select { padding: 8px 16px; border-radius: 8px; border: 1px solid #d9d9d9; font-
   white-space: pre-wrap;
   word-break: keep-all;
 }
-.time { font-size: 0.75rem; color: #888; }
-
+.time { font-size: 0.75rem; color: inherit; opacity: 0.6; }
 /* 週間リストとアコーディオン */
 .weekly-title { font-size: 1.1rem; margin: 30px 0 15px; border-left: 5px solid #1890ff; padding-left: 12px; }
-.weekly-item-container { border-bottom: 1px solid #f0f0f0; }
+.weekly-item-container { border-bottom: 1px solid rgba(128, 128, 128, 0.2); }
 .weekly-row {
-  display: flex; justify-content: space-between; align-items: center;
-  padding: 16px; background: white; cursor: pointer; transition: 0.2s;
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center;
+  padding: 16px; 
+  background: rgba(128, 128, 128, 0.05); /* 白を止めて透過に */
+  color: inherit;
+  cursor: pointer; 
+  transition: 0.2s;
 }
-.weekly-row:hover { background: #fafafa; }
-.weekly-row.is-active { background: #f0faff; }
+.weekly-row:hover { background: rgba(128, 128, 128, 0.15); }
+.weekly-row.is-active { background: rgba(24, 144, 255, 0.1); }
 .weekly-date { flex: 1.5; font-size: 0.9rem; }
 .weekly-icon { flex: 1; text-align: center; font-size: 1.3rem; }
 .weekly-temp { flex: 1.5; text-align: right; font-size: 0.9rem; }

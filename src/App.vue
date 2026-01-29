@@ -42,19 +42,23 @@ watch(isDarkMode, (newVal) => {
   </div>
 </template>
 <style>
-  body {
+body {
   margin: 0;
   padding: 0;
   background-color: #ffffff;
+  color: #333333;
   transition: background-color 0.3s ease, color 0.3s ease;
 }
-
-.dark-mode-body {
-  background-color: #1a1a1a;
-}
-
-  body.dark-mode-body {
+body.dark-mode-body {
   background-color: #1a1a1a !important;
+  color: #f0f0f0 !important;
+}
+.dark-mode-body * {
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+.dark-mode-body .description, 
+.dark-mode-body .date {
+  color: #ccc !important;
 }
 </style>
 <style scoped>

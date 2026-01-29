@@ -173,4 +173,14 @@ main{
   float: left;
   width: 70px;
 }
+.calc-view, .calc-equal {
+  background-color: #000 !important;
+  border: 1px solid #333;
+}
+
+.button-only {
+  background-color: var(--button-bg, #eee);
+  color: var(--text-color, #333);
+  border: 1px solid var(--border-color, #ccc);
+}
 </style>
