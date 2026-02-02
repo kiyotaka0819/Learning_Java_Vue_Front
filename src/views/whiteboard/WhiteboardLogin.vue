@@ -12,7 +12,7 @@ const handleSignUp = async () => {
     password: password.value,
   })
   if (error) alert(error.message)
-  else alert('登録完了！メールを確認してな（設定次第）')
+  else alert('登録完了！メールを確認')
 }
 
 // ログイン

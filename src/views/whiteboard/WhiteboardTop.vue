@@ -27,7 +27,6 @@ onMounted(() => {
 </template>
 
 <style>
-/* ここにさっきのダークモード用背景色とかを入れるとええ感じや */
 .app-container {
   background-color: #121212;
   min-height: 100vh;
