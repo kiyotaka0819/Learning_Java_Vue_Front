@@ -118,41 +118,65 @@ const toggleTodo = async (todo) => {
     alert('タスク更新中に予期せぬエラーが発生しました');
   }
 }
+// ==ブラウザ通知==
+// 1. 通知の許可を求める関数
+const requestNotificationPermission = async () => {
+  if (!('Notification' in window)) {
+    console.log('このブラウザは通知をサポートしていません');
+    return false;
+  }
+  if (Notification.permission === 'granted') {
+    return true;
+  }
+  if (Notification.permission !== 'denied') {
+    const permission = await Notification.requestPermission();
+    return permission === 'granted';
+  }
+  return false;
+};
  
-// コンポーネント初期化時
-onMounted(() => {
+// 2. 通知を表示する関数
+const showNotification = (title, options = {}) => {
+  if (Notification.permission === 'granted') {
+    return new Notification(title, options);
+  }
+};
+ 
+// 3. コンポーネント初期化時
+onMounted(async () => {
+  // 通知の許可を求める
+  await requestNotificationPermission();
   // 初期データ読み込み
   fetchTodos();
   // リアルタイム接続設定
   console.log('リアルタイム接続を設定中...');
   const channel = supabase
-    .channel('todos-realtime-v2') // 新しいチャンネル名（既存のものと異なる名前）
+    .channel('todos-realtime-v2')
     .on(
       'postgres_changes',
       { event: '*', schema: 'public', table: 'todos' },
       (payload) => {
         console.log('🔥 リアルタイムイベント検出:', payload.eventType);
-        // イベント検出時に強制的に再取得
+        // イベント検出時に通知表示とデータ再取得
         if (payload.eventType === 'INSERT') {
-          console.log('新規タスク追加を検出:', payload.new);
+          showNotification('新しいタスクが追加されました', {
+            body: `内容: ${payload.new.content}`,
+            icon: '/favicon.ico' // アプリのアイコン
+          });
           fetchTodos();
         } else if (payload.eventType === 'DELETE') {
-          console.log('タスク削除を検出:', payload.old);
+          showNotification('タスクが削除されました');
           fetchTodos();
         } else if (payload.eventType === 'UPDATE') {
-          console.log('タスク更新を検出:', payload.new);
+          showNotification('タスクが更新されました', {
+            body: `内容: ${payload.new.content}`
+          });
           fetchTodos();
         }
       }
     )
-    .subscribe((status) => {
-      console.log('チャンネル接続状態:', status);
-    });
+    .subscribe();
   subscription = channel;
-  // 接続状態の追加チェック
-  setTimeout(() => {
-    console.log('接続状態確認:', channel.state);
-  }, 3000);
 });
  
 // コンポーネント破棄時のクリーンアップ
