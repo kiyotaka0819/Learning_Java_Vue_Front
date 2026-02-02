@@ -1,12 +1,12 @@
 <script setup>
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted, onBeforeUnmount} from 'vue'
 import { supabase } from '../../lib/supabaseClient'
 
 // --- 状態管理 ---
 const todos = ref([])
 const newTask = ref('')
 const loading = ref(true)
-
+let subscription = null
 // --- CRUD処理 ---
 
 // 1. 取得 (Read)
@@ -60,19 +60,35 @@ const toggleTodo = async (todo) => {
 }
 
 onMounted(() => {
-  fetchTodos();
-  // リアルタイムサブスクリプションを設定
-  const subscription = supabase
-    .from('todos')
-    .on('*', payload => {
-      console.log('変更を検知:', payload);
-      fetchTodos(); // データを再取得
+  console.log('マウント開始')
+  fetchTodos()
+    .then(() => {
+      console.log('データ取得完了', todos.value)
     })
-    .subscribe();
-  // コンポーネント破棄時にクリーンアップ
-  onBeforeUnmount(() => {
+    .catch(err => {
+      console.error('fetchTodos error:', err)
+      loading.value = false  // エラー時もロード状態を解除
+    });
+  // リアルタイムサブスクリプション設定
+  try {
+    subscription = supabase
+      .from('todos')
+      .on('*', payload => {
+        console.log('変更を検知:', payload);
+        fetchTodos();
+      })
+      .subscribe();
+    console.log('サブスクリプション設定成功');
+  } catch (err) {
+    console.error('サブスクリプション設定エラー:', err);
+  }
+});
+ 
+onBeforeUnmount(() => {
+  console.log('アンマウント処理');
+  if (subscription) {
     supabase.removeSubscription(subscription);
-  });
+  }
 });
 </script>
 
