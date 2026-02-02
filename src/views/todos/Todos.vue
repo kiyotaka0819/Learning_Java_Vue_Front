@@ -1,131 +1,242 @@
 <script setup>
-import { ref, onMounted, onBeforeUnmount} from 'vue'
+// 必要なVue関数のインポート
+import { ref, onMounted, onBeforeUnmount } from 'vue'
+// Supabaseクライアント（接続情報が含まれているファイル）
 import { supabase } from '../../lib/supabaseClient'
-
-// --- 状態管理 ---
-const todos = ref([])
-const newTask = ref('')
-const loading = ref(true)
-let subscription = null
+ 
+// --- 状態管理（リアクティブ変数） ---
+const todos = ref([])        // Todoリストを格納する配列
+const newTask = ref('')      // 新規タスク入力用
+const loading = ref(true)    // ロード状態管理用
+ 
+// リアルタイム更新用のサブスクリプション変数（コンポーネント全体でアクセス可能にする）
+let subscription = null;
+// ポーリング用のインターバルID
+let pollingInterval = null;
+ 
 // --- CRUD処理 ---
-
-// 1. 取得 (Read)
+ 
+// 1. 取得 (Read) - Todoリストを取得する
 const fetchTodos = async () => {
-  loading.value = true
-  const { data, error } = await supabase
-    .from('todos')
-    .select('*')
-    .order('created_at', { ascending: false })
-  if (error) console.error('エラーが発生しました:', error.message)
-  if (error) alert('取得失敗：' + error.message)
-  else todos.value = data
-  loading.value = false
-}
-
-// 2. 追加 (Create)
-const addTodo = async () => {
-  if (!newTask.value.trim()) return
-  
-  const { error } = await supabase
-    .from('todos')
-    .insert([{ content: newTask.value }])
-
-  if (error) alert('追加失敗：' + error.message)
-  else {
-    newTask.value = ''
-    await fetchTodos() // 再読み込み
+  try {
+    console.log('データ取得開始...');
+    loading.value = true
+ 
+    // Supabaseからデータを取得
+    const { data, error } = await supabase
+      .from('todos')
+      .select('*')
+      .order('created_at', { ascending: false })
+ 
+    // エラー処理
+    if (error) {
+      console.error('エラーが発生しました:', error.message)
+      alert('取得失敗：' + error.message)
+    } else {
+      // 取得成功時
+      console.log('データ取得成功:', data);
+      todos.value = data || []
+    }
+  } catch (e) {
+    // 予期せぬエラー処理
+    console.error('予期せぬエラー:', e);
+    alert('データ取得中に予期せぬエラーが発生しました');
+  } finally {
+    // 成功・失敗に関わらずロード状態を解除
+    loading.value = false
   }
 }
-
-// 3. 削除 (Delete)
-const deleteTodo = async (id) => {
-  const { error } = await supabase
-    .from('todos')
-    .delete()
-    .eq('id', id)
-
-  if (error) alert('削除失敗：' + error.message)
-  else await fetchTodos()
+ 
+// 2. 追加 (Create) - 新しいTodoを作成する
+const addTodo = async () => {
+  // 空文字チェック（トリムして空なら何もしない）
+  if (!newTask.value.trim()) return
+ 
+  try {
+    console.log('タスク追加:', newTask.value);
+    // Supabaseにデータを挿入
+    const { error } = await supabase
+      .from('todos')
+      .insert([{ content: newTask.value }])
+ 
+    // エラー処理
+    if (error) {
+      console.error('追加失敗:', error);
+      alert('追加失敗：' + error.message)
+    } else {
+      // 追加成功時
+      console.log('タスク追加成功');
+      newTask.value = ''  // 入力フィールドをクリア
+      await fetchTodos() // データを再取得して表示を更新
+    }
+  } catch (e) {
+    console.error('予期せぬエラー:', e);
+    alert('タスク追加中に予期せぬエラーが発生しました');
+  }
 }
-
+ 
+// 3. 削除 (Delete) - 指定IDのTodoを削除する
+const deleteTodo = async (id) => {
+  try {
+    console.log('タスク削除:', id);
+    // Supabaseからデータを削除
+    const { error } = await supabase
+      .from('todos')
+      .delete()
+      .eq('id', id)
+ 
+    // エラー処理
+    if (error) {
+      console.error('削除失敗:', error);
+      alert('削除失敗：' + error.message)
+    } else {
+      // 削除成功時
+      console.log('タスク削除成功');
+      await fetchTodos() // データを再取得して表示を更新
+    }
+  } catch (e) {
+    console.error('予期せぬエラー:', e);
+    alert('タスク削除中に予期せぬエラーが発生しました');
+  }
+}
+ 
 // 4. 更新 (Update) - 完了状態を反転させる
 const toggleTodo = async (todo) => {
-  const { error } = await supabase
-    .from('todos')
-    .update({ is_done: !todo.is_done }) // 現在の状態を反転させて送る
-    .eq('id', todo.id)
-
-  if (error) alert('更新失敗：' + error.message)
-  else await fetchTodos() // 再読み込み
-}
-
-onMounted(() => {
-  console.log('マウント開始')
-  fetchTodos()
-    .then(() => {
-      console.log('データ取得完了', todos.value)
-    })
-    .catch(err => {
-      console.error('fetchTodos error:', err)
-      loading.value = false  // エラー時もロード状態を解除
-    });
-  // リアルタイムサブスクリプション設定
   try {
-    subscription = supabase
+    console.log('タスク状態更新:', todo.id);
+    // Supabaseでデータを更新（現在の状態を反転）
+    const { error } = await supabase
       .from('todos')
-      .on('*', payload => {
-        console.log('変更を検知:', payload);
-        fetchTodos();
-      })
+      .update({ is_done: !todo.is_done })
+      .eq('id', todo.id)
+ 
+    // エラー処理
+    if (error) {
+      console.error('更新失敗:', error);
+      alert('更新失敗：' + error.message)
+    } else {
+      // 更新成功時
+      console.log('タスク更新成功');
+      await fetchTodos() // データを再取得して表示を更新
+    }
+  } catch (e) {
+    console.error('予期せぬエラー:', e);
+    alert('タスク更新中に予期せぬエラーが発生しました');
+  }
+}
+ 
+// コンポーネントがマウント（表示）されたときに実行
+onMounted(() => {
+  console.log('コンポーネントをマウント中...');
+  
+  // 初回データ取得
+  fetchTodos();
+  
+  // Supabase v2 リアルタイム接続
+  try {
+    console.log('リアルタイム接続を設定中...');
+    
+    const channel = supabase
+      .channel('table-changes')
+      .on(
+        'postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'todos' },
+        (payload) => {
+          console.log('INSERT 検知:', payload);
+          fetchTodos();
+        }
+      )
+      .on(
+        'postgres_changes',
+        { event: 'UPDATE', schema: 'public', table: 'todos' },
+        (payload) => {
+          console.log('UPDATE 検知:', payload);
+          fetchTodos();
+        }
+      )
+      .on(
+        'postgres_changes',
+        { event: 'DELETE', schema: 'public', table: 'todos' },
+        (payload) => {
+          console.log('DELETE 検知:', payload);
+          fetchTodos();
+        }
+      )
       .subscribe();
-    console.log('サブスクリプション設定成功');
-  } catch (err) {
-    console.error('サブスクリプション設定エラー:', err);
+      
+    // グローバル変数に保存して後でクリーンアップできるようにする
+    subscription = channel;
+      
+    console.log('リアルタイム接続設定完了');
+  } catch (e) {
+    console.error('リアルタイム接続エラー:', e);
   }
 });
- 
+
+// コンポーネント破棄時のクリーンアップ
 onBeforeUnmount(() => {
   console.log('アンマウント処理');
+  
+  // Supabase v2でのチャンネル削除
   if (subscription) {
-    supabase.removeSubscription(subscription);
+    console.log('チャンネル解除');
+    supabase.removeChannel(subscription);
   }
 });
 </script>
-
+ 
 <template>
-  <div class="todo-container">
-    <header class="todo-header">
-      <h1>ToDo</h1>
-      <p>Supabase連携済み</p>
-    </header>
-
-    <div class="input-group">
-      <input 
-        v-model="newTask" 
-        @keyup.enter="addTodo" 
+<div class="todo-container">
+<header class="todo-header">
+<h1>ToDo</h1>
+<p>Supabase連携済み</p>
+</header>
+ 
+    <!-- 新規タスク入力エリア -->
+<div class="input-group">
+<input
+        v-model="newTask"
+        @keyup.enter="addTodo"
         placeholder="何をやりますか？"
         type="text"
-      >
-      <button @click="addTodo" :disabled="!newTask">追加</button>
-    </div>
-
-    <div v-if="loading" class="status">通信中です...</div>
-    
-    <transition-group name="list" tag="ul" class="todo-list" v-else>
-      <li v-for="todo in todos" :key="todo.id" class="todo-item" :class="{ 'is-completed': todo.is_done }">
-        <span class="content" @click="toggleTodo(todo)">
+>
+<button @click="addTodo" :disabled="!newTask">追加</button>
+</div>
+ 
+    <!-- ローディング表示 -->
+<div v-if="loading" class="status">
+      通信中です...
+<button @click="loading = false" style="background-color: #ff9800;">
+        ロード強制解除（デバッグ用）
+</button>
+</div>
+<!-- Todoリスト表示 -->
+<transition-group name="list" tag="ul" class="todo-list" v-else>
+<li v-for="todo in todos" :key="todo.id" class="todo-item" :class="{ 'is-completed': todo.is_done }">
+<span class="content" @click="toggleTodo(todo)">
             {{ todo.content }}
-        </span>
-        <button class="delete-btn" @click="deleteTodo(todo.id)">削除</button>
-    </li>
-    </transition-group>
-
-    <div v-if="!loading && todos.length === 0" class="status">
+</span>
+<button class="delete-btn" @click="deleteTodo(todo.id)">削除</button>
+</li>
+</transition-group>
+ 
+    <!-- Todoが存在しない場合のメッセージ -->
+<div v-if="!loading && todos.length === 0" class="status">
       タスクがありません。
-    </div>
-  </div>
+</div>
+<!-- デバッグ情報表示エリア -->
+<div class="debug-panel">
+<h3>デバッグ情報</h3>
+<p>タスク入力値: "{{ newTask }}"</p>
+<p>ロード状態: {{ loading }}</p>
+<p>取得データ数: {{ todos.length }}</p>
+<button @click="fetchTodos()" style="background-color: #4caf50;">
+        データ再取得
+</button>
+</div>
+</div>
 </template>
-
+ 
 <style scoped>
 .todo-container {
   max-width: 500px;
@@ -136,20 +247,20 @@ onBeforeUnmount(() => {
   box-shadow: 0 10px 30px rgba(0,0,0,0.1);
   color: inherit;
 }
-
+ 
 .todo-header {
   text-align: center;
   margin-bottom: 30px;
 }
-
+ 
 .todo-header h1 { color: #1890ff; font-size: 2rem; }
-
+ 
 .input-group {
   display: flex;
   gap: 10px;
   margin-bottom: 25px;
 }
-
+ 
 input {
   flex: 1;
   padding: 12px 16px;
@@ -158,7 +269,7 @@ input {
   background: rgba(255, 255, 255, 0.9);
   color: #333;
 }
-
+ 
 button {
   padding: 8px 16px;
   background: #1890ff;
@@ -168,12 +279,12 @@ button {
   cursor: pointer;
   transition: 0.3s;
 }
-
+ 
 button:hover:not(:disabled) { background: #40a9ff; }
 button:disabled { background: #ccc; cursor: not-allowed; }
-
+ 
 .todo-list { list-style: none; padding: 0; }
-
+ 
 .todo-item {
   display: flex;
   justify-content: space-between;
@@ -184,26 +295,40 @@ button:disabled { background: #ccc; cursor: not-allowed; }
   border-radius: 10px;
   border-left: 4px solid #1890ff;
 }
-
+ 
 .delete-btn {
   background: #ff4d4f;
   font-size: 0.8rem;
   padding: 4px 10px;
 }
-
+ 
 .todo-item.is-completed {
   opacity: 0.5;
   border-left-color: #52c41a;
 }
-
+ 
 .todo-item.is-completed .content {
   text-decoration: line-through;
 }
-
+ 
 .delete-btn:hover { background: #ff7875; }
-
+ 
 .status { text-align: center; opacity: 0.6; margin-top: 20px; }
-
+ 
+/* デバッグパネルのスタイル */
+.debug-panel {
+  margin-top: 30px;
+  padding: 15px;
+  border: 1px dashed #ccc;
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.02);
+}
+ 
+.debug-panel h3 {
+  margin-top: 0;
+  color: #666;
+}
+ 
 /* アニメーション */
 .list-enter-active, .list-leave-active { transition: all 0.5s ease; }
 .list-enter-from, .list-leave-to { opacity: 0; transform: translateX(30px); }
