@@ -44,7 +44,7 @@ const deleteTodo = async (id) => {
     .delete()
     .eq('id', id)
 
-  if (error) alert('削除失敗や：' + error.message)
+  if (error) alert('削除失敗：' + error.message)
   else await fetchTodos()
 }
 
@@ -59,8 +59,21 @@ const toggleTodo = async (todo) => {
   else await fetchTodos() // 再読み込み
 }
 
-onMounted(fetchTodos)
-watch(fetchTodos)
+onMounted(() => {
+  fetchTodos();
+  // リアルタイムサブスクリプションを設定
+  const subscription = supabase
+    .from('todos')
+    .on('*', payload => {
+      console.log('変更を検知:', payload);
+      fetchTodos(); // データを再取得
+    })
+    .subscribe();
+  // コンポーネント破棄時にクリーンアップ
+  onBeforeUnmount(() => {
+    supabase.removeSubscription(subscription);
+  });
+});
 </script>
 
 <template>
