@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import { supabase } from '../../lib/supabaseClient'
 
 // --- 状態管理 ---
@@ -55,11 +55,12 @@ const toggleTodo = async (todo) => {
     .update({ is_done: !todo.is_done }) // 現在の状態を反転させて送る
     .eq('id', todo.id)
 
-  if (error) alert('更新失敗や：' + error.message)
+  if (error) alert('更新失敗：' + error.message)
   else await fetchTodos() // 再読み込み
 }
 
 onMounted(fetchTodos)
+watch(fetchTodos)
 </script>
 
 <template>
