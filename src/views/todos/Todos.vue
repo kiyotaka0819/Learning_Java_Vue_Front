@@ -125,23 +125,34 @@ onMounted(() => {
   fetchTodos();
   // リアルタイム接続設定
   console.log('リアルタイム接続を設定中...');
-  // チャンネル名を変更し、より明確なロギングを追加
-const channel = supabase
-  .channel('custom-todos-changes') // 一意のチャンネル名
-  .on(
-    'postgres_changes',
-    { event: '*', schema: 'public', table: 'todos' },
-    (payload) => {
-      console.log('変更検知 - イベントタイプ:', payload.eventType);
-      console.log('変更検知 - データ:', payload.new || payload.old);
-      fetchTodos();
-    }
-  )
-  .subscribe((status) => {
-    console.log('チャンネル接続状態:', status);
-  });
-  // 後でクリーンアップできるように保存
+  const channel = supabase
+    .channel('todos-realtime-v2') // 新しいチャンネル名（既存のものと異なる名前）
+    .on(
+      'postgres_changes',
+      { event: '*', schema: 'public', table: 'todos' },
+      (payload) => {
+        console.log('🔥 リアルタイムイベント検出:', payload.eventType);
+        // イベント検出時に強制的に再取得
+        if (payload.eventType === 'INSERT') {
+          console.log('新規タスク追加を検出:', payload.new);
+          fetchTodos();
+        } else if (payload.eventType === 'DELETE') {
+          console.log('タスク削除を検出:', payload.old);
+          fetchTodos();
+        } else if (payload.eventType === 'UPDATE') {
+          console.log('タスク更新を検出:', payload.new);
+          fetchTodos();
+        }
+      }
+    )
+    .subscribe((status) => {
+      console.log('チャンネル接続状態:', status);
+    });
   subscription = channel;
+  // 接続状態の追加チェック
+  setTimeout(() => {
+    console.log('接続状態確認:', channel.state);
+  }, 3000);
 });
  
 // コンポーネント破棄時のクリーンアップ
