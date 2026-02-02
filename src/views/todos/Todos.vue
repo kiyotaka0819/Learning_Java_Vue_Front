@@ -1,35 +1,123 @@
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { supabase } from '../../lib/supabaseClient'
+ 
 // --- 状態管理 ---
 const todos = ref([])
 const newTask = ref('')
 const loading = ref(true)
 let subscription = null; // リアルタイム購読管理用
  
-// --- データ取得処理 ---
+// --- CRUD処理 ---
+ 
+// 1. 取得 (Read) - Todoリストを取得する
 const fetchTodos = async () => {
   try {
     console.log('データ取得開始...');
-    loading.value = true;
+    loading.value = true
+ 
+    // Supabaseからデータを取得
     const { data, error } = await supabase
       .from('todos')
       .select('*')
-      .order('created_at', { ascending: false });
+      .order('created_at', { ascending: false })
+ 
+    // エラー処理
     if (error) {
-      console.error('データ取得エラー:', error);
-      return;
+      console.error('エラーが発生しました:', error.message)
+      alert('取得失敗：' + error.message)
+    } else {
+      // 取得成功時
+      console.log('データ取得成功:', data);
+      todos.value = data || []
     }
-    console.log('データ取得成功:', data);
-    todos.value = data || [];
+  } catch (e) {
+    // 予期せぬエラー処理
+    console.error('予期せぬエラー:', e);
+    alert('データ取得中に予期せぬエラーが発生しました');
+  } finally {
+    // 成功・失敗に関わらずロード状態を解除
+    loading.value = false
+  }
+}
+ 
+// 2. 追加 (Create) - 新しいTodoを作成する
+const addTodo = async () => {
+  // 空文字チェック（トリムして空なら何もしない）
+  if (!newTask.value.trim()) return
+ 
+  try {
+    console.log('タスク追加:', newTask.value);
+    // Supabaseにデータを挿入
+    const { error } = await supabase
+      .from('todos')
+      .insert([{ content: newTask.value }])
+ 
+    // エラー処理
+    if (error) {
+      console.error('追加失敗:', error);
+      alert('追加失敗：' + error.message)
+    } else {
+      // 追加成功時
+      console.log('タスク追加成功');
+      newTask.value = ''  // 入力フィールドをクリア
+      await fetchTodos() // データを再取得して表示を更新
+    }
   } catch (e) {
     console.error('予期せぬエラー:', e);
-  } finally {
-    loading.value = false;
+    alert('タスク追加中に予期せぬエラーが発生しました');
   }
-};
+}
  
-// （以下、既存のCRUD処理は変更なし）
+// 3. 削除 (Delete) - 指定IDのTodoを削除する
+const deleteTodo = async (id) => {
+  try {
+    console.log('タスク削除:', id);
+    // Supabaseからデータを削除
+    const { error } = await supabase
+      .from('todos')
+      .delete()
+      .eq('id', id)
+ 
+    // エラー処理
+    if (error) {
+      console.error('削除失敗:', error);
+      alert('削除失敗：' + error.message)
+    } else {
+      // 削除成功時
+      console.log('タスク削除成功');
+      await fetchTodos() // データを再取得して表示を更新
+    }
+  } catch (e) {
+    console.error('予期せぬエラー:', e);
+    alert('タスク削除中に予期せぬエラーが発生しました');
+  }
+}
+ 
+// 4. 更新 (Update) - 完了状態を反転させる
+const toggleTodo = async (todo) => {
+  try {
+    console.log('タスク状態更新:', todo.id);
+    // Supabaseでデータを更新（現在の状態を反転）
+    const { error } = await supabase
+      .from('todos')
+      .update({ is_done: !todo.is_done })
+      .eq('id', todo.id)
+ 
+    // エラー処理
+    if (error) {
+      console.error('更新失敗:', error);
+      alert('更新失敗：' + error.message)
+    } else {
+      // 更新成功時
+      console.log('タスク更新成功');
+      await fetchTodos() // データを再取得して表示を更新
+    }
+  } catch (e) {
+    console.error('予期せぬエラー:', e);
+    alert('タスク更新中に予期せぬエラーが発生しました');
+  }
+}
  
 // コンポーネント初期化時
 onMounted(() => {
@@ -37,23 +125,21 @@ onMounted(() => {
   fetchTodos();
   // リアルタイム接続設定
   console.log('リアルタイム接続を設定中...');
-  const channel = supabase
-    .channel('todos-changes') // チャンネル名（任意の名前）
-    .on(
-      'postgres_changes', 
-      {
-        event: '*',  // 全てのイベント（INSERT, UPDATE, DELETE）
-        schema: 'public',
-        table: 'todos' // テーブル名
-      },
-      (payload) => {
-        console.log('リアルタイム更新を検出:', payload);
-        fetchTodos(); // データを再取得して表示更新
-      }
-    )
-    .subscribe((status) => {
-      console.log('接続ステータス:', status);
-    });
+  // チャンネル名を変更し、より明確なロギングを追加
+const channel = supabase
+  .channel('custom-todos-changes') // 一意のチャンネル名
+  .on(
+    'postgres_changes',
+    { event: '*', schema: 'public', table: 'todos' },
+    (payload) => {
+      console.log('変更検知 - イベントタイプ:', payload.eventType);
+      console.log('変更検知 - データ:', payload.new || payload.old);
+      fetchTodos();
+    }
+  )
+  .subscribe((status) => {
+    console.log('チャンネル接続状態:', status);
+  });
   // 後でクリーンアップできるように保存
   subscription = channel;
 });
