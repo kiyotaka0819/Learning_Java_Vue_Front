@@ -37,7 +37,8 @@ watch(isDarkMode, (newVal) => {
 </script>
 
 <template>
-  <div :class="['container', { 'dark-mode': isDarkMode }]">
+  <div :class="['portfolio-container', { 'dark-mode': isDarkMode }]">
+    
     <header>
       <h1>My Portfolio</h1>
       <p>天本のポートフォリオサイト</p>
@@ -46,16 +47,21 @@ watch(isDarkMode, (newVal) => {
       </button>
     </header>
     
-    <div class="menu">
+    <nav class="main-menu">
       <button @click="$router.push('/')">ホーム</button>
       <button @click="$router.push('/apps')">アプリ</button>
       <button @click="$router.push('/portfolio')">ポートフォリオ</button>
       <button @click="$router.push('/about')">ABOUT ME</button>
-    </div>
+    </nav>
     
-    <div class="content">
-      <router-view />
-    </div>
+    <main class="page-content">
+      <router-view v-slot="{ Component }">
+        <transition name="fade" mode="out-in">
+          <component :is="Component" />
+        </transition>
+      </router-view>
+    </main>
+
   </div>
 </template>
 <style>
@@ -79,95 +85,72 @@ body.dark-mode-body {
 }
 </style>
 <style scoped>
-/* 変数の定義 */
-.container {
-  /* ライトモード用の色定義 */
+/* コンテナ全体の設定 */
+.portfolio-container {
   --bg-color: #ffffff;
   --text-color: #333333;
   --border-color: #cccccc;
-  --button-bg: #ffffff;
-  max-width: 800px;
+  
+  max-width: 900px; /* 少し広めに */
   margin: 0 auto;
-  padding: 20px;
-  text-align: center;
+  padding: 40px 20px;
   min-height: 100vh;
   background-color: var(--bg-color);
   color: var(--text-color);
   transition: all 0.3s ease;
 }
 
-/* ダークモード時に変数を上書き */
+/* ダークモードの変数上書き */
 .dark-mode {
   --bg-color: #1a1a1a;
   --text-color: #f0f0f0;
-  --border-color: #555555;
-  --button-bg: #333333;
-}
-
-.dark-mode {
-  background-color: #1a1a1a;
-  color: #f0f0f0;
-}
-
-:deep(*) {
-  color: inherit;
+  --border-color: #444444;
 }
 
 header {
-  margin-bottom: 20px;
+  text-align: center; /* ヘッダーだけ中央寄せ */
+  margin-bottom: 30px;
 }
 
-.menu {
+.main-menu {
   display: flex;
   justify-content: center;
-  gap: 10px;
-  margin: 20px 0;
+  gap: 15px;
+  margin-bottom: 40px;
 }
 
-/* ダークモード中のボタン */
-.dark-mode button {
-  background: #333;
-  color: #f0f0f0;
-  border-color: #f0f0f0;
-}
-
-button {
-  padding: 10px 20px;
-  cursor: pointer;
-  border: 1px solid var(--text-color);
-  background: var(--button-bg);
-  color: var(--text-color);
-  border-radius: 4px;
-}
-
-button:hover {
-  opacity: 0.8;
-}
-
-.content {
-  margin-top: 40px;
+/* ページの中身が表示されるエリア */
+.page-content {
+  text-align: left; /* 基本は左寄せに戻す */
   padding: 20px;
   border: 1px solid var(--border-color);
-  border-radius: 8px;
-  text-align: left;
+  border-radius: 12px;
   background-color: var(--bg-color);
 }
 
-:deep(.link-btn:hover) {
-  color: white !important; /* 背景が緑になるなら文字は絶対白 */
+/* ボタンの共通スタイル */
+button {
+  padding: 8px 16px;
+  cursor: pointer;
+  border: 1px solid var(--text-color);
+  background: transparent;
+  color: var(--text-color);
+  border-radius: 6px;
+  transition: 0.2s;
 }
 
-.dark-mode :deep(a) {
-  color: #52d398;
+button:hover {
+  background: var(--text-color);
+  color: var(--bg-color);
 }
 
-/* ダークモード中の枠線 */
-.dark-mode .content {
-  border-color: #555;
+/* フェードアニメーション */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.2s ease;
 }
-
-.toggle-btn {
-  margin-top: 10px;
-  font-weight: bold;
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>
