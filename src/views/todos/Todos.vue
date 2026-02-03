@@ -244,6 +244,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
+  <title>TODOリストアプリ</title>
   <div class="todo-container">
     <header class="todo-header">
       <h1>ToDo</h1>

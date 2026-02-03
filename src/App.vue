@@ -21,6 +21,7 @@ watch(isDarkMode, (newVal) => {
 
 <template>
   <div :class="['container', { 'dark-mode': isDarkMode }]">
+  <title>天本のポートフォリオサイト</title>
     <header>
       <h1>My Portfolio</h1>
       <p>天本のポートフォリオサイト</p>
