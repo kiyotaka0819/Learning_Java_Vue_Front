@@ -1,5 +1,17 @@
 <script setup>
-import { ref, watch } from 'vue';
+import { ref, watch, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
+onMounted(() => {
+  const redirect = sessionStorage.getItem('redirect');
+  if (redirect) {
+    sessionStorage.removeItem('redirect');
+    // URLからドメイン部分を抜いて、パスだけを取り出す処理をしてから移動
+    const url = new URL(redirect);
+    router.push(url.pathname + url.search);
+  }
+});
 
 // ダークモードの状態を管理する変数
 const isDarkMode = ref(false);
@@ -21,7 +33,6 @@ watch(isDarkMode, (newVal) => {
 
 <template>
   <div :class="['container', { 'dark-mode': isDarkMode }]">
-  <title>天本のポートフォリオサイト</title>
     <header>
       <h1>My Portfolio</h1>
       <p>天本のポートフォリオサイト</p>
