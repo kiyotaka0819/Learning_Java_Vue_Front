@@ -7,9 +7,14 @@ onMounted(() => {
   const redirect = sessionStorage.getItem('redirect');
   if (redirect) {
     sessionStorage.removeItem('redirect');
-    // URLからドメイン部分を抜いて、パスだけを取り出す処理をしてから移動
     const url = new URL(redirect);
-    router.push(url.pathname + url.search);
+    const repoName = '/Learning_Java_Vue_Front';
+    let path = url.pathname;
+    if (path.startsWith(repoName)) {
+      path = path.replace(repoName, '');
+    }
+    // パスが空になったら '/' に、そうでなければ抽出したパスへ
+    router.push((path || '/') + url.search + url.hash);
   }
 });
 
