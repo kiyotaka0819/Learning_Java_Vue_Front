@@ -16,26 +16,29 @@ const sleepResult = computed(() => {
   // 全て「分」に変換して計算するのが、日跨ぎ処理の最短ルート
   const bedTotal = bedHour.value * 60 + bedMinute.value;
   const wakeTotal = wakeHour.value * 60 + wakeMinute.value;
-  
+
   let diff = wakeTotal - bedTotal;
-  
+
   // マイナスになる場合（例：23時寝、7時起き）は24時間分（1440分）を足して補正
   if (diff < 0) diff += 24 * 60;
 
   return {
-    h: Math.floor(diff / 60),  // 時間部分
-    m: diff % 60,              // 分部分
-    totalHours: diff / 60      // 色変え判定用の数値
+    h: Math.floor(diff / 60), // 時間部分
+    m: diff % 60, // 分部分
+    totalHours: diff / 60 // 色変え判定用の数値
   };
 });
 
 // --- [3] 数値変更の共通処理 ---
 // target: どの値を、direction: どっち方向に変えるかを一括管理
 const changeValue = (target, direction) => {
-  if (target === 'bedH')  bedHour.value   = (bedHour.value + direction + 24) % 24;
-  if (target === 'bedM')  bedMinute.value = (bedMinute.value + direction + 60) % 60;
-  if (target === 'wakeH') wakeHour.value  = (wakeHour.value + direction + 24) % 24;
-  if (target === 'wakeM') wakeMinute.value = (wakeMinute.value + direction + 60) % 60;
+  if (target === 'bedH') bedHour.value = (bedHour.value + direction + 24) % 24;
+  if (target === 'bedM')
+    bedMinute.value = (bedMinute.value + direction + 60) % 60;
+  if (target === 'wakeH')
+    wakeHour.value = (wakeHour.value + direction + 24) % 24;
+  if (target === 'wakeM')
+    wakeMinute.value = (wakeMinute.value + direction + 60) % 60;
 };
 
 // --- [4] 長押し（連続実行）の制御 ---
@@ -58,6 +61,13 @@ const stopContinuous = () => {
     timerId.value = null;
   }
 };
+
+// --- [5] 現在時刻をセットする機能 ---
+const setCurrentTime = () => {
+  const now = new Date();
+  wakeHour.value = now.getHours();
+  wakeMinute.value = now.getMinutes();
+};
 </script>
 
 <template>
@@ -72,78 +82,125 @@ const stopContinuous = () => {
         <label>就寝時刻</label>
         <div class="input-row">
           <div class="control-group">
-            <button 
-              @touchstart.prevent="startContinuous('bedH', 1, 130)" 
-              @touchend="stopContinuous" 
-              @mousedown="startContinuous('bedH', 1, 130)" 
-              @mouseup="stopContinuous" 
-              @mouseleave="stopContinuous">+</button>
-            <div class="display"><span>{{ bedHour }}</span>時</div>
-            <button 
-              @touchstart.prevent="startContinuous('bedH', -1, 130)" 
-              @touchend="stopContinuous" 
-              @mousedown="startContinuous('bedH', -1, 130)" 
-              @mouseup="stopContinuous" 
-              @mouseleave="stopContinuous">−</button>
+            <button
+              @touchstart.prevent="startContinuous('bedH', 1, 130)"
+              @touchend="stopContinuous"
+              @mousedown="startContinuous('bedH', 1, 130)"
+              @mouseup="stopContinuous"
+              @mouseleave="stopContinuous"
+            >
+              +
+            </button>
+            <div class="display">
+              <span>{{ bedHour }}</span
+              >時
+            </div>
+            <button
+              @touchstart.prevent="startContinuous('bedH', -1, 130)"
+              @touchend="stopContinuous"
+              @mousedown="startContinuous('bedH', -1, 130)"
+              @mouseup="stopContinuous"
+              @mouseleave="stopContinuous"
+            >
+              −
+            </button>
           </div>
           <div class="control-group">
-            <button 
-              @touchstart.prevent="startContinuous('bedM', 1, 80)" 
-              @touchend="stopContinuous" 
-              @mousedown="startContinuous('bedM', 1, 80)" 
-              @mouseup="stopContinuous" 
-              @mouseleave="stopContinuous">+</button>
-            <div class="display"><span>{{ bedMinute }}</span>分</div>
-            <button 
-              @touchstart.prevent="startContinuous('bedM', -1, 80)" 
-              @touchend="stopContinuous" 
-              @mousedown="startContinuous('bedM', -1, 80)" 
-              @mouseup="stopContinuous" 
-              @mouseleave="stopContinuous">−</button>
+            <button
+              @touchstart.prevent="startContinuous('bedM', 1, 80)"
+              @touchend="stopContinuous"
+              @mousedown="startContinuous('bedM', 1, 80)"
+              @mouseup="stopContinuous"
+              @mouseleave="stopContinuous"
+            >
+              +
+            </button>
+            <div class="display">
+              <span>{{ bedMinute }}</span
+              >分
+            </div>
+            <button
+              @touchstart.prevent="startContinuous('bedM', -1, 80)"
+              @touchend="stopContinuous"
+              @mousedown="startContinuous('bedM', -1, 80)"
+              @mouseup="stopContinuous"
+              @mouseleave="stopContinuous"
+            >
+              −
+            </button>
           </div>
         </div>
       </section>
 
       <section class="card">
-        <label>起床時刻</label>
+        <div class="card-header">
+          <label>起床時刻</label>
+          <button class="btn-now" @click="setCurrentTime">Now</button>
+        </div>
         <div class="input-row">
           <div class="control-group">
-            <button 
-              @touchstart.prevent="startContinuous('wakeH', 1, 150)" 
-              @touchend="stopContinuous" 
-              @mousedown="startContinuous('wakeH', 1, 150)" 
-              @mouseup="stopContinuous" 
-              @mouseleave="stopContinuous">+</button>
-            <div class="display"><span>{{ wakeHour }}</span>時</div>
-            <button 
-              @touchstart.prevent="startContinuous('wakeH', -1, 150)" 
-              @touchend="stopContinuous" 
-              @mousedown="startContinuous('wakeH', -1, 150)" 
-              @mouseup="stopContinuous" 
-              @mouseleave="stopContinuous">−</button>
+            <button
+              @touchstart.prevent="startContinuous('wakeH', 1, 150)"
+              @touchend="stopContinuous"
+              @mousedown="startContinuous('wakeH', 1, 150)"
+              @mouseup="stopContinuous"
+              @mouseleave="stopContinuous"
+            >
+              +
+            </button>
+            <div class="display">
+              <span>{{ wakeHour }}</span
+              >時
+            </div>
+            <button
+              @touchstart.prevent="startContinuous('wakeH', -1, 150)"
+              @touchend="stopContinuous"
+              @mousedown="startContinuous('wakeH', -1, 150)"
+              @mouseup="stopContinuous"
+              @mouseleave="stopContinuous"
+            >
+              −
+            </button>
           </div>
           <div class="control-group">
-            <button 
-              @touchstart.prevent="startContinuous('wakeM', 1, 80)" 
-              @touchend="stopContinuous" 
-              @mousedown="startContinuous('wakeM', 1, 80)" 
-              @mouseup="stopContinuous" 
-              @mouseleave="stopContinuous">+</button>
-            <div class="display"><span>{{ wakeMinute }}</span>分</div>
-            <button 
-              @touchstart.prevent="startContinuous('wakeM', -1, 80)" 
-              @touchend="stopContinuous" 
-              @mousedown="startContinuous('wakeM', -1, 80)" 
-              @mouseup="stopContinuous" 
-              @mouseleave="stopContinuous">−</button>
+            <button
+              @touchstart.prevent="startContinuous('wakeM', 1, 80)"
+              @touchend="stopContinuous"
+              @mousedown="startContinuous('wakeM', 1, 80)"
+              @mouseup="stopContinuous"
+              @mouseleave="stopContinuous"
+            >
+              +
+            </button>
+            <div class="display">
+              <span>{{ wakeMinute }}</span
+              >分
+            </div>
+            <button
+              @touchstart.prevent="startContinuous('wakeM', -1, 80)"
+              @touchend="stopContinuous"
+              @mousedown="startContinuous('wakeM', -1, 80)"
+              @mouseup="stopContinuous"
+              @mouseleave="stopContinuous"
+            >
+              −
+            </button>
           </div>
         </div>
       </section>
-      
-      <div class="result-card" :class="{ 'good': sleepResult.totalHours >= 7, 'warn': sleepResult.totalHours < 6 }">
+
+      <div
+        class="result-card"
+        :class="{
+          good: sleepResult.totalHours >= 7,
+          warn: sleepResult.totalHours < 6
+        }"
+      >
         <p>合計睡眠時間</p>
         <div class="time-display">
-          <strong>{{ sleepResult.h }}</strong>時間 <strong>{{ sleepResult.m }}</strong>分
+          <strong>{{ sleepResult.h }}</strong
+          >時間 <strong>{{ sleepResult.m }}</strong
+          >分
         </div>
         <p class="status-msg">
           {{ sleepResult.totalHours >= 7 ? '十分な睡眠時間' : '少し寝不足…' }}
@@ -155,7 +212,9 @@ const stopContinuous = () => {
 
 <style scoped>
 .app-container {
-  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Hiragino Kaku Gothic ProN", sans-serif;
+  font-family:
+    -apple-system, BlinkMacSystemFont, 'Helvetica Neue',
+    'Hiragino Kaku Gothic ProN', sans-serif;
   max-width: 400px;
   margin: 0 auto;
   padding: 20px;
@@ -163,21 +222,42 @@ const stopContinuous = () => {
   min-height: 100vh;
 }
 
-header { text-align: center; margin-bottom: 25px; }
-h1 { margin: 0; font-size: 1.6rem; color: #1a1a1a; }
-.subtitle { font-size: 0.85rem; color: #666; margin-top: 5px; }
+header {
+  text-align: center;
+  margin-bottom: 25px;
+}
+h1 {
+  margin: 0;
+  font-size: 1.6rem;
+  color: #1a1a1a;
+}
+.subtitle {
+  font-size: 0.85rem;
+  color: #666;
+  margin-top: 5px;
+}
 
 .card {
   background: white;
   border-radius: 18px;
   padding: 20px;
   margin-bottom: 20px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
-label { display: block; font-weight: bold; margin-bottom: 15px; color: #333; font-size: 1rem; }
+label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 15px;
+  color: #333;
+  font-size: 1rem;
+}
 
-.input-row { display: flex; justify-content: space-around; gap: 15px; }
+.input-row {
+  display: flex;
+  justify-content: space-around;
+  gap: 15px;
+}
 
 .control-group {
   display: flex;
@@ -189,8 +269,15 @@ label { display: block; font-weight: bold; margin-bottom: 15px; color: #333; fon
   width: 45%;
 }
 
-.display { margin: 12px 0; color: #222; }
-.display span { font-size: 1.8rem; font-weight: 800; margin-right: 2px; }
+.display {
+  margin: 12px 0;
+  color: #222;
+}
+.display span {
+  font-size: 1.8rem;
+  font-weight: 800;
+  margin-right: 2px;
+}
 
 button {
   width: 100%;
@@ -200,13 +287,16 @@ button {
   border-radius: 10px;
   font-size: 1.6rem;
   font-weight: bold;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   cursor: pointer;
   user-select: none; /* 長押し時にテキストが選択されるのを防ぐ */
   -webkit-tap-highlight-color: transparent; /* タップ時の青い枠を消す */
   color: #007aff;
 }
-button:active { background: #eef2ff; transform: scale(0.96); }
+button:active {
+  background: #eef2ff;
+  transform: scale(0.96);
+}
 
 .result-card {
   margin-top: 35px;
@@ -217,14 +307,55 @@ button:active { background: #eef2ff; transform: scale(0.96); }
   transition: all 0.4s ease;
 }
 
-.time-display { font-size: 1.3rem; margin: 12px 0; color: #333; }
-.time-display strong { font-size: 2.6rem; color: #333; }
+.card-header {
+  display: column;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+.btn-now {
+  background: #007aff;
+  color: white;
+  border: none;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: bold;
+  cursor: pointer;
+}
+.btn-now:active {
+  opacity: 0.8;
+}
+
+.time-display {
+  font-size: 1.3rem;
+  margin: 12px 0;
+  color: #333;
+}
+.time-display strong {
+  font-size: 2.6rem;
+  color: #333;
+}
 
 /* 状態別のカラーリング */
-.good { background: #d4edda; border: 2px solid #28a745; }
-.good strong { color: #155724; }
-.warn { background: #f8d7da; border: 2px solid #dc3545; }
-.warn strong { color: #721c24; }
+.good {
+  background: #d4edda;
+  border: 2px solid #28a745;
+}
+.good strong {
+  color: #155724;
+}
+.warn {
+  background: #f8d7da;
+  border: 2px solid #dc3545;
+}
+.warn strong {
+  color: #721c24;
+}
 
-.status-msg { font-size: 1rem; font-weight: 600; margin-top: 5px; }
+.status-msg {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-top: 5px;
+}
 </style>
