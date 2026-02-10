@@ -71,6 +71,13 @@
         "tech": ["JavaScript","Vue3","SupabaseによるDB連携","canvaにて描画" ],
         "url": "https://kiyotaka0819.github.io/Learning_Java_Vue_Front/whiteboard",
         "to": "/whiteboard"
+      },
+      {
+        "name": "睡眠計算アプリ",
+        "description": "Vue3のComposition APIを使った睡眠計算アプリ。",
+        "tech": ["JavaScript","Vue3" ],
+        "url": "https://kiyotaka0819.github.io/Learning_Java_Vue_Front/sleep_checker",
+        "to": "/sleep_checker"
       }
       ]
       },
