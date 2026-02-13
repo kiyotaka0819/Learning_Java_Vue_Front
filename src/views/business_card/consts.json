@@ -1,0 +1,163 @@
+{
+  "sample": {
+    "name": "山田 太郎",
+    "ruby": "やまだ たろう",
+    "job": "フルスタックエンジニア",
+    "age": 28,
+    "portfolio": "https://example.com",
+    "githubId": "github",
+    "catchCopy": "技術でワクワクする未来を作ります。",
+    "skill": {
+      "backend": ["Node.js", "PostgreSQL"],
+      "frontend": ["Vue.js", "TypeScript"]
+    }
+  },
+  "skillSuggestions": {
+    "フロント": [
+      "HTML",
+      "CSS",
+      "Sass",
+      "JavaScript",
+      "TypeScript",
+      "React",
+      "Next.js",
+      "Vue.js",
+      "Nuxt.js",
+      "Svelte",
+      "Astro",
+      "Three.js",
+      "Vite",
+      "Webpack",
+      "Tailwind CSS",
+      "Bootstrap",
+      "Material UI",
+      "Chakra UI",
+      "その他"
+    ],
+    "バックエンド": [
+      "C",
+      "C#",
+      "C++",
+      "Java",
+      "Spring Boot",
+      "Kotlin",
+      "Python",
+      "Django",
+      "FastAPI",
+      "PHP",
+      "Laravel",
+      "Ruby",
+      "Ruby on Rails",
+      "Node.js",
+      "Express.js",
+      "Go",
+      "Rust",
+      "ASP.NET Core",
+      "その他"
+    ],
+    "DB": [
+      "MySQL",
+      "PostgreSQL",
+      "SQLite",
+      "MariaDB",
+      "Oracle Database",
+      "SQL Server",
+      "MongoDB",
+      "Redis",
+      "DynamoDB",
+      "Firestore",
+      "その他"
+    ],
+    "インフラ": [
+      "AWS",
+      "GCP",
+      "Azure",
+      "Docker",
+      "Kubernetes",
+      "Nginx",
+      "Apache",
+      "Terraform",
+      "Cloudflare",
+      "Vercel",
+      "Netlify",
+      "その他"
+    ],
+    "バージョン管理": [
+      "Git",
+      "GitHub",
+      "GitLab",
+      "Bitbucket",
+      "その他"
+    ],
+    "プロジェクト管理": [
+      "Backlog",
+      "Jira",
+      "Redmine",
+      "Notion",
+      "Trello",
+      "その他"
+    ],
+    "開発ツール": [
+      "VS Code",
+      "Visual Studio",
+      "IntelliJ IDEA",
+      "Eclipse",
+      "Xcode",
+      "Android Studio",
+      "その他"
+    ],
+    "コミュニケーション": [
+      "Slack",
+      "Microsoft Teams",
+      "Discord",
+      "Zoom",
+      "その他"
+    ]
+  },
+"jobTree": [
+    {
+      "category": "開発・設計系",
+      "subCategories": [
+        {
+          "name": "システムエンジニア(SE)",
+          "roles": ["フロントエンド", "バックエンド", "フルスタック", "社内SE", "その他"]
+        },
+        {
+          "name": "プログラマー(PG)",
+          "roles": ["Webアプリ", "スマホアプリ", "ゲーム開発", "AI・データ解析", "その他"]
+        },
+        {
+          "name": "組み込み・制御",
+          "roles": ["家電・ロボット", "車載システム", "IoTデバイス", "その他"]
+        }
+      ]
+    },
+    {
+      "category": "インフラ・ネットワーク系",
+      "subCategories": [
+        {
+          "name": "設計・構築",
+          "roles": ["クラウドエンジニア", "SRE", "ネットワーク構築", "DBA", "その他"]
+        },
+        {
+          "name": "保守・監視",
+          "roles": ["サーバー監視", "インフラ保守", "セキュリティ監視", "その他"]
+        }
+      ]
+    },
+    {
+      "category": "運用・サポート・事務系",
+      "subCategories": [
+        {
+          "name": "テクニカルサポート",
+          "roles": ["ヘルプデスク", "ITサポート", "テクニカルサポート", "カスタマーサクセス", "その他"]
+        },
+        {
+          "name": "IT事務・管理",
+          "roles": ["IT事務", "IT資産管理", "進行管理・デスク", "その他"]
+        }
+      ]
+    },
+    { "category": "その他(フリー記述)", "subCategories": [{ "name": "その他", "roles": ["自由入力"] }] }
+  ]
+}

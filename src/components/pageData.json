@@ -78,6 +78,13 @@
         "tech": ["JavaScript","Vue3" ],
         "url": "https://kiyotaka0819.github.io/Learning_Java_Vue_Front/sleep_checker",
         "to": "/sleep_checker"
+      },
+      {
+        "name": "名刺生成アプリ",
+        "description": "Vue3のComposition APIを使った名刺生成アプリ。",
+        "tech": ["TypeScript","Vue3" ],
+        "url": "https://kiyotaka0819.github.io/Learning_Java_Vue_Front/business_card",
+        "to": "/business_card"
       }
       ]
       },
