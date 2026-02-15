@@ -235,18 +235,31 @@ const getCategoryClass = (cat: string | number) => {
 /* フッター */
 .footer {
   margin-top: auto;
+  width: 100%; /* これを明示 */
   display: flex;
-  justify-content: space-between;
+  justify-content: space-between; /* 両端に振り分ける */
   align-items: center;
-  font-size: 12px;
+  font-size: 11px; /* 少し小さくして上品に */
   font-family: 'Noto Sans JP', sans-serif;
   color: #94a3b8;
-  padding-top: 10px;
+  padding-top: 12px;
   border-top: 1px solid #f1f5f9;
+  box-sizing: border-box; /* はみ出し防止 */
 }
 
-.link { color: #1e293b; text-decoration: none; font-weight: bold; border-bottom: 1px solid #cbd5e0; }
-.flip-hint { font-style: italic; }
+.link { 
+  color: #1e293b; 
+  text-decoration: none; 
+  font-weight: bold; 
+  border-bottom: 1px solid #cbd5e0;
+  flex-shrink: 0;
+}
+
+.flip-hint { 
+  font-style: italic;
+  text-align: right;
+  flex-grow: 1;
+}
 
 /* スマホ対応 */
 @media (max-width: 600px) {
