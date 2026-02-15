@@ -275,13 +275,14 @@ const commitSkills = () => {
 
 <style scoped>
 .editor-panel {
-  width: 100%;
-  max-width: 500px;
+  flex: 1;
+  max-width: 800px;
+  min-width: 350px; 
+  box-sizing: border-box;
   background: #ffffff;
   padding: 30px;
   border-radius: 16px;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
-  box-sizing: border-box;
   color: #333;
 }
 
@@ -361,8 +362,8 @@ const commitSkills = () => {
   box-sizing: border-box;
 }
 .skill-input-row {
-  display: grid;
-  grid-template-columns: 1fr 1.5fr;
+  display: flex;
+  flex-wrap: wrap;
   gap: 10px;
 }
 .age-input {
@@ -457,5 +458,10 @@ textarea.base-input {
 
 .mt-10 {
   margin-top: 10px;
+}
+
+.skill-select {
+  flex: 1;
+  min-width: 150px;
 }
 </style>

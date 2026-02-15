@@ -69,6 +69,24 @@ const copyShareUrl = () => {
 
 <style>
 /* アプリ全体の基盤スタイル */
+.container {
+  width: 100%;
+  max-width: 1200px; /* 1200pxくらいまで広げてええんや */
+  margin: 0 auto;
+  padding: 20px;
+  display: flex;
+  flex-direction: column; /* スマホでは縦並び */
+  align-items: center;
+  gap: 40px;
+}
+
+@media (min-width: 1024px) {
+  .container {
+    flex-direction: row; /* デスクトップでは横並び */
+    align-items: flex-start;
+    justify-content: center;
+  }
+}
 .app-container {
   display: flex;
   flex-direction: column;

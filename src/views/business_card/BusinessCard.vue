@@ -110,8 +110,8 @@ const getCategoryClass = (cat: string | number) => {
 @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700&display=swap');
 
 .card-stage {
-  width: 95vw;
-  max-width: 520px;
+  width: 100%;
+  max-width: 550px;
   aspect-ratio: 1.618 / 1;
   perspective: 1500px;
   margin: 10px auto;
@@ -132,9 +132,12 @@ const getCategoryClass = (cat: string | number) => {
 
 .card-front,
 .card-back {
-  position: absolute;
   width: 100%;
   height: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  position: absolute;
   backface-visibility: hidden;
   border-radius: 2px;
   padding: 20px 25px;
@@ -142,7 +145,6 @@ const getCategoryClass = (cat: string | number) => {
   background: #fff;
   border: 1px solid #ccc;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
 }
 
 .card-front {
@@ -194,9 +196,11 @@ const getCategoryClass = (cat: string | number) => {
 
 /* スキルグリッド */
 .card-skills-grid {
-  flex: 1;
+  flex: 1; 
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 12px;
+  padding-bottom: 10px;
   column-gap: 15px;
   row-gap: 8px;
   align-content: start;
