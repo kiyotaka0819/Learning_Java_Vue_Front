@@ -8,77 +8,102 @@ import ReadMeEditor from './jibun_os/ReadMeEditor.vue';
 
 const router = useRouter();
 
-// コンポーネントの紐付け
 const componentMap: Record<string, any> = {
   pokedex: markRaw(PokemonZukan),
   'business-card': markRaw(BusinessCardApp),
   'readme-editor': markRaw(ReadMeEditor)
 };
 
-// ウィンドウの状態管理
 const windows = reactive(
   consts.initialWindows.map((win) => ({
     ...win,
     isMaximized: false,
-    // typeがcomponentならcomponentMapから取得、そうでなければcontent(URL)をそのまま使用
     content: win.type === 'component' ? componentMap[win.id] : win.content || ''
   }))
 );
 
-// フォルダ（カテゴリ）の開閉状態
 const openFolderId = ref<string | null>(null);
-
 const maxZ = ref(100);
 const isDragging = ref(false);
 const isResizing = ref(false);
 
-// ウィンドウ操作ロジック
-const startDrag = (win: any, e: MouseEvent) => {
+// 座標取得の共通化
+const getCoords = (e: MouseEvent | TouchEvent) => {
+  if ('touches' in e && e.touches.length > 0) {
+    return { x: e.touches[0].clientX, y: e.touches[0].clientY };
+  }
+  return { x: (e as MouseEvent).clientX, y: (e as MouseEvent).clientY };
+};
+
+const startDrag = (win: any, e: MouseEvent | TouchEvent) => {
   if (win.isMaximized) return;
   win.z = ++maxZ.value;
   isDragging.value = true;
-  const startX = e.clientX - win.x;
-  const startY = e.clientY - win.y;
 
-  const onMouseMove = (e: MouseEvent) => {
-    win.x = e.clientX - startX;
-    win.y = e.clientY - startY;
+  const { x, y } = getCoords(e);
+  const startX = x - win.x;
+  const startY = y - win.y;
+
+  const onMove = (me: MouseEvent | TouchEvent) => {
+    if (me.cancelable) me.preventDefault();
+    const { x: curX, y: curY } = getCoords(me);
+    win.x = curX - startX;
+    win.y = curY - startY;
   };
-  const onMouseUp = () => {
+
+  const onEnd = () => {
     isDragging.value = false;
-    document.removeEventListener('mousemove', onMouseMove);
-    document.removeEventListener('mouseup', onMouseUp);
+    ['mousemove', 'mouseup', 'touchmove', 'touchend'].forEach((ev) =>
+      document.removeEventListener(
+        ev,
+        ev.startsWith('touch') ? onMove : (onMove as any)
+      )
+    );
+    document.removeEventListener('mouseup', onEnd);
+    document.removeEventListener('touchend', onEnd);
   };
-  document.addEventListener('mousemove', onMouseMove);
-  document.addEventListener('mouseup', onMouseUp);
+
+  document.addEventListener('mousemove', onMove);
+  document.addEventListener('mouseup', onEnd);
+  document.addEventListener('touchmove', onMove, { passive: false });
+  document.addEventListener('touchend', onEnd);
 };
 
-const startResize = (win: any, e: MouseEvent) => {
+const startResize = (win: any, e: MouseEvent | TouchEvent) => {
   e.stopPropagation();
   if (win.isMaximized) return;
   isResizing.value = true;
-  const startWidth = win.width;
-  const startHeight = win.height;
-  const startX = e.clientX;
-  const startY = e.clientY;
 
-  const onMouseMove = (e: MouseEvent) => {
-    win.width = Math.max(300, startWidth + (e.clientX - startX));
-    win.height = Math.max(200, startHeight + (e.clientY - startY));
+  const { x, y } = getCoords(e);
+  const startW = win.width;
+  const startH = win.height;
+  const startX = x;
+  const startY = y;
+
+  const onMove = (me: MouseEvent | TouchEvent) => {
+    if (me.cancelable) me.preventDefault();
+    const { x: curX, y: curY } = getCoords(me);
+    win.width = Math.max(300, startW + (curX - startX));
+    win.height = Math.max(200, startH + (curY - startY));
   };
-  const onMouseUp = () => {
+
+  const onEnd = () => {
     isResizing.value = false;
-    document.removeEventListener('mousemove', onMouseMove);
-    document.removeEventListener('mouseup', onMouseUp);
+    document.removeEventListener('mousemove', onMove);
+    document.removeEventListener('mouseup', onEnd);
+    document.removeEventListener('touchmove', onMove);
+    document.removeEventListener('touchend', onEnd);
   };
-  document.addEventListener('mousemove', onMouseMove);
-  document.addEventListener('mouseup', onMouseUp);
+
+  document.addEventListener('mousemove', onMove);
+  document.addEventListener('mouseup', onEnd);
+  document.addEventListener('touchmove', onMove, { passive: false });
+  document.addEventListener('touchend', onEnd);
 };
 
 const focusWin = (win: any) => {
   win.z = ++maxZ.value;
 };
-
 const toggleWin = (id: string) => {
   const win = windows.find((w) => w.id === id);
   if (win) {
@@ -86,13 +111,10 @@ const toggleWin = (id: string) => {
     if (win.isOpen) win.z = ++maxZ.value;
   }
 };
-
-const toggleFolder = (folderId: string) => {
-  openFolderId.value = openFolderId.value === folderId ? null : folderId;
+const toggleFolder = (id: string) => {
+  openFolderId.value = openFolderId.value === id ? null : id;
 };
-
 const getWinById = (id: string) => windows.find((w) => w.id === id);
-
 const toggleMaximize = (win: any) => {
   if (win.isMaximized) {
     win.x = win.oldX || 100;
@@ -112,48 +134,36 @@ const toggleMaximize = (win: any) => {
     win.isMaximized = true;
   }
 };
-
 const logout = () => router.push('/apps');
-
-// フォルダ外クリックで閉じる処理
-const closeFolderOnOutsideClick = (e: MouseEvent) => {
-  if (!(e.target as HTMLElement).closest('.dock-item')) {
+const closeFolder = (e: MouseEvent) => {
+  if (!(e.target as HTMLElement).closest('.dock-item'))
     openFolderId.value = null;
-  }
 };
 
-onMounted(() =>
-  document.addEventListener('mousedown', closeFolderOnOutsideClick)
-);
-onUnmounted(() =>
-  document.removeEventListener('mousedown', closeFolderOnOutsideClick)
-);
+onMounted(() => document.addEventListener('mousedown', closeFolder));
+onUnmounted(() => document.removeEventListener('mousedown', closeFolder));
 </script>
 
 <template>
-  <div
-    class="os-fullscreen-container"
-    :class="{ 'is-dragging': isDragging || isResizing }"
-  >
-    <div class="mac-desktop">
+  <div class="os-root" :class="{ 'is-dragging': isDragging || isResizing }">
+    <div class="desktop">
       <div class="top-bar">
-        <div class="left">
+        <div class="top-bar-left">
           <span class="logo">🍎</span>
-          <span class="menu-item bold">Jibun OS</span>
-          <span class="menu-item logout-btn" @click="logout">⏻</span>
+          <span class="app-name">Jibun OS</span>
+          <span class="logout-icon" @click="logout">⏻</span>
         </div>
-        <div class="right">
-          <span class="menu-item">Feb 16 12:00 PM</span>
-        </div>
+        <div class="top-bar-right">Feb 16 12:00 PM</div>
       </div>
 
       <div v-for="win in windows" :key="win.id">
-        <Transition name="window-genie">
+        <Transition name="genie">
           <div
             v-show="win.isOpen"
-            class="mac-window"
-            :class="{ maximized: win.isMaximized }"
+            class="window"
+            :class="{ 'is-max': win.isMaximized }"
             @mousedown="focusWin(win)"
+            @touchstart="focusWin(win)"
             :style="{
               left: win.x + 'px',
               top: win.y + 'px',
@@ -163,27 +173,23 @@ onUnmounted(() =>
             }"
           >
             <div
-              class="mac-title-bar"
-              :style="
-                ['code-editor', 'readme-editor'].includes(win.id)
-                  ? { background: '#333', color: '#fff' }
-                  : {}
-              "
+              class="title-bar"
               @mousedown="startDrag(win, $event)"
+              @touchstart="startDrag(win, $event)"
               @dblclick="toggleMaximize(win)"
             >
-              <div class="traffic-lights">
-                <span class="light red" @click.stop="win.isOpen = false"></span>
+              <div class="controls">
+                <span class="dot red" @click.stop="win.isOpen = false"></span>
                 <span
-                  class="light green"
+                  class="dot green"
                   @click.stop="toggleMaximize(win)"
                 ></span>
               </div>
-              <div class="title">{{ win.title }}</div>
+              <div class="title-text">{{ win.title }}</div>
             </div>
 
-            <div class="mac-content">
-              <div v-if="isDragging || isResizing" class="drag-overlay"></div>
+            <div class="content-area">
+              <div v-if="isDragging || isResizing" class="overlay"></div>
               <component
                 v-if="win.type === 'component'"
                 :is="win.content"
@@ -192,8 +198,7 @@ onUnmounted(() =>
               <iframe
                 v-else-if="win.type === 'iframe'"
                 :src="win.content"
-                frameborder="0"
-                class="app-iframe"
+                class="iframe"
               ></iframe>
             </div>
 
@@ -201,6 +206,7 @@ onUnmounted(() =>
               v-if="!win.isMaximized"
               class="resizer"
               @mousedown="startResize(win, $event)"
+              @touchstart="startResize(win, $event)"
             ></div>
           </div>
         </Transition>
@@ -215,29 +221,22 @@ onUnmounted(() =>
             @click="toggleFolder(cat.id)"
           >
             <span class="dock-icon">{{ cat.icon }}</span>
-            <div class="folder-label">{{ cat.title }}</div>
-
-            <Transition name="folder-pop">
+            <div class="dock-label">{{ cat.title }}</div>
+            <Transition name="pop">
               <div v-if="openFolderId === cat.id" class="folder-menu">
                 <div
                   v-for="appId in cat.apps"
                   :key="appId"
-                  class="folder-app-item"
+                  class="folder-item"
                   @click.stop="
                     toggleWin(appId);
                     openFolderId = null;
                   "
                 >
-                  <span class="folder-app-icon">{{
-                    getWinById(appId)?.icon
-                  }}</span>
-                  <span class="folder-app-title">{{
+                  <span>{{ getWinById(appId)?.icon }}</span>
+                  <span class="folder-item-title">{{
                     getWinById(appId)?.title
                   }}</span>
-                  <div
-                    v-if="getWinById(appId)?.isOpen"
-                    class="active-dot-small"
-                  ></div>
                 </div>
               </div>
             </Transition>
@@ -249,68 +248,89 @@ onUnmounted(() =>
 </template>
 
 <style scoped>
-/* 基本コンテナ */
-.os-fullscreen-container {
+/* 全体 */
+.os-root {
   position: fixed;
   inset: 0;
-  z-index: 999999;
-  overflow: hidden;
+  z-index: 9999;
   background: #000;
-  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  overflow: hidden;
+  touch-action: none;
+  font-family: sans-serif;
 }
-.mac-desktop {
+.desktop {
   width: 100%;
   height: 100%;
+  background: radial-gradient(circle at top left, #7105ec, #ff3d77);
   position: relative;
-  background: radial-gradient(at 0% 0%, #7105ec 0%, #ff3d77 100%);
 }
+
+/* トップバー */
 .top-bar {
   height: 32px;
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(20px);
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(15px);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 20px;
-  color: white;
+  padding: 0 15px;
+  color: #fff;
   font-size: 13px;
-  z-index: 2000000;
+  z-index: 10000;
+}
+.top-bar-left {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+.app-name {
+  font-weight: bold;
+}
+.logout-icon {
+  cursor: pointer;
+  padding: 2px 5px;
+  transition: 0.2s;
+}
+.logout-icon:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
 }
 
-/* ウィンドウ関連 */
-.mac-window {
+/* ウィンドウ */
+.window {
   position: absolute;
-  background: rgba(255, 255, 255, 0.4);
-  backdrop-filter: blur(20px) saturate(160%);
-  border-radius: 12px;
-  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
   display: flex;
   flex-direction: column;
-  overflow: hidden;
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  background: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(20px) saturate(150%);
+  border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+  transition: opacity 0.2s;
 }
-.is-dragging .mac-window {
+.is-dragging .window {
   transition: none !important;
 }
-.mac-window.maximized {
+.window.is-max {
   border-radius: 0;
 }
 
-.mac-title-bar {
+.title-bar {
   height: 38px;
   display: flex;
   align-items: center;
-  padding: 0 15px;
-  cursor: grab;
+  padding: 0 12px;
   background: rgba(0, 0, 0, 0.05);
+  cursor: grab;
+  user-select: none;
 }
-.traffic-lights {
+.controls {
   display: flex;
   gap: 8px;
-  width: 40px;
+  width: 50px;
 }
-.light {
+.dot {
   width: 12px;
   height: 12px;
   border-radius: 50%;
@@ -322,209 +342,141 @@ onUnmounted(() =>
 .green {
   background: #27c93f;
 }
-.title {
-  flex-grow: 1;
+.title-text {
+  flex: 1;
   text-align: center;
   font-size: 13px;
   font-weight: 600;
-  color: #444;
-  margin-right: 40px;
+  color: #333;
+  margin-right: 50px;
 }
 
-.mac-content {
-  flex-grow: 1;
+.content-area {
+  flex: 1;
   position: relative;
   background: transparent;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
   overflow: auto;
 }
-.mac-content::-webkit-scrollbar {
-  width: 8px;
-}
-.mac-content::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.1);
-  border-radius: 10px;
-}
-.app-iframe {
+.iframe {
   width: 100%;
   height: 100%;
   border: none;
+  background: #fff;
+}
+.overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 100;
 }
 .resizer {
   position: absolute;
   right: 0;
   bottom: 0;
-  width: 15px;
-  height: 15px;
+  width: 20px;
+  height: 20px;
   cursor: nwse-resize;
+  z-index: 10;
 }
 
-/* ドックとフォルダ階層システム */
+/* ドック */
 .dock-container {
   position: absolute;
   bottom: 20px;
   width: 100%;
   display: flex;
   justify-content: center;
-  z-index: 50;
 }
 .dock {
   background: rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(30px);
-  padding: 10px 15px;
-  border-radius: 24px;
+  backdrop-filter: blur(25px);
+  padding: 10px;
+  border-radius: 20px;
   display: flex;
-  gap: 15px;
+  gap: 10px;
   border: 1px solid rgba(255, 255, 255, 0.2);
 }
 .dock-item {
-  width: 60px;
-  height: 60px;
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 14px;
+  width: 55px;
+  height: 55px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: transform 0.2s;
   position: relative;
 }
-.dock-item:hover {
-  transform: scale(1.1) translateY(-5px);
-}
 .dock-icon {
-  font-size: 24px;
+  font-size: 22px;
 }
-.folder-label {
-  font-size: 9px;
-  color: #333;
+.dock-label {
+  font-size: 8px;
   font-weight: bold;
-  margin-top: 2px;
+  color: #fff;
 }
 
-/* フォルダポップアップメニュー */
+/* フォルダメニュー */
 .folder-menu {
   position: absolute;
-  bottom: 80px;
+  bottom: 70px;
   left: 50%;
   transform: translateX(-50%);
   background: rgba(255, 255, 255, 0.3);
-  backdrop-filter: blur(40px);
-  border-radius: 18px;
-  padding: 12px;
+  backdrop-filter: blur(30px);
+  border-radius: 15px;
+  padding: 10px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  min-width: 180px;
-  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  gap: 5px;
+  min-width: 150px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
 }
-.folder-app-item {
+.folder-item {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 10px 15px;
-  border-radius: 10px;
+  gap: 10px;
+  padding: 8px;
+  border-radius: 8px;
   color: #fff;
-  font-weight: 500;
-  transition: background 0.2s;
-  position: relative;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-}
-.folder-app-item:hover {
-  background: rgba(255, 255, 255, 0.25);
-}
-.folder-app-icon {
-  font-size: 20px;
-}
-.folder-app-title {
   font-size: 14px;
-  white-space: nowrap;
+  transition: 0.2s;
 }
-.active-dot-small {
-  position: absolute;
-  right: 10px;
-  width: 5px;
-  height: 5px;
-  background: #fff;
-  border-radius: 50%;
-}
-.logout-btn {
-  position: relative;
-  cursor: pointer;
-  padding: 2px 6px;
-  transition: all 0.2s;
-}
-
-.logout-btn:hover {
+.folder-item:hover {
   background: rgba(255, 255, 255, 0.2);
-  box-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
-  border-radius: 4px;
 }
 
-.logout-btn::after {
-  content: 'ログアウト';
-  position: absolute;
-  top: 35px;
-  right: 0;
-  background: rgba(0, 0, 0, 0.8);
-  color: white;
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 10px;
-  white-space: nowrap;
-  opacity: 0;
-  visibility: hidden;
-  transition: all 0.1s ease;
-  transition-delay: 0.2s;
-}
-
-.logout-btn:hover::after {
-  content: 'ログアウト';
-  position: absolute;
-  top: 35px;
-  right: 0;
-  background: rgba(0, 0, 0, 0.8);
-  color: white;
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 10px;
-  white-space: nowrap;
-  opacity: 1;
-  visibility: visible;
-  transform: translateY(0);
-}
-
-.logout-btn::after {
-  transform: translateY(5px);
+/* レスポンシブ */
+@media (max-width: 600px) {
+  .window:not(.is-max) {
+    width: 95% !important;
+    left: 2.5% !important;
+    height: 60% !important;
+  }
+  .dock-item {
+    width: 45px;
+    height: 45px;
+  }
+  .title-text {
+    font-size: 11px;
+  }
 }
 
 /* アニメーション */
-.folder-pop-enter-active,
-.folder-pop-leave-active {
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+.genie-enter-active,
+.genie-leave-active {
+  transition: all 0.3s ease;
 }
-.folder-pop-enter-from,
-.folder-pop-leave-to {
-  opacity: 0;
-  transform: translateX(-50%) translateY(20px) scale(0.8);
-}
-
-.window-genie-enter-active,
-.window-genie-leave-active {
-  transition: all 0.4s cubic-bezier(0.55, 0, 0.1, 1);
-}
-.window-genie-enter-from {
-  transform: translateY(100px) scale(0.1);
+.genie-enter-from,
+.genie-leave-to {
+  transform: scale(0.5) translateY(100px);
   opacity: 0;
 }
-.window-genie-leave-to {
-  transform: translateY(500px) scale(0.1) !important;
-  opacity: 0;
+.pop-enter-active {
+  transition: all 0.2s;
 }
-
-.bold {
-  font-weight: bold;
+.pop-enter-from {
+  opacity: 0;
+  transform: translateX(-50%) translateY(10px);
 }
 </style>
