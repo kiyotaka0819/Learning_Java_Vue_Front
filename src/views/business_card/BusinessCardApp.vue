@@ -3,6 +3,7 @@ import { ref, onMounted } from 'vue';
 import consts from './consts.json';
 import BusinessCard from './BusinessCard.vue';
 import EditorPanel from './EditorPanel.vue';
+import { supabase } from '../../lib/supabaseClient';
 
 const myData = ref<any>({
   name: '',
@@ -18,43 +19,49 @@ const myData = ref<any>({
 const isFlipped = ref(false);
 const isEditMode = ref(false);
 
-// 1. URLを発行する側のロジック
-const copyShareUrl = () => {
+// 1. Supabaseへ保存して短いURLを発行
+const copyShareUrl = async () => {
   try {
-    // JSONを文字列にして、URIエンコードしてからBase64に変換
-    const jsonStr = JSON.stringify(myData.value);
-    const base64 = btoa(encodeURIComponent(jsonStr));
+    // DBにmyDataの内容をjsonbとして保存
+    const { data, error } = await supabase
+      .from('cards')
+      .insert([{ data: myData.value }])
+      .select('id')
+      .single();
 
-    // パラメータ名を短く「d」とかにすると、さらにURLが短縮される
-    const shareUrl = `${window.location.origin}${window.location.pathname}?d=${base64}`;
+    if (error) throw error;
 
-    navigator.clipboard.writeText(shareUrl).then(() => {
-      alert('LINE等でも送れる共有URLをコピーしました。');
-    });
+    // IDだけを乗せた短いURLを生成
+    const shareUrl = `${window.location.origin}${window.location.pathname}?id=${data.id}`;
+
+    await navigator.clipboard.writeText(shareUrl);
+    alert('URLをコピーしました。');
   } catch (e) {
-    console.error('URL生成に失敗しました。', e);
-    alert('URL生成に失敗しました。');
+    console.error('DBとの接続に失敗しました：', e);
+    alert('保存に失敗しました。');
   }
 };
 
-// 2. ページ読み込み時にURLからデータを復元するロジック
-onMounted(() => {
+// 2. URLのIDからデータを復元
+onMounted(async () => {
   const params = new URLSearchParams(window.location.search);
-  const d = params.get('d');
-  const oldData = params.get('data');
+  const id = params.get('id');
 
-  const targetData = d || oldData;
-
-  if (targetData) {
+  if (id) {
     try {
-      // Base64をデコードして、URIデコードしてからJSONに戻す
-      const decoded = decodeURIComponent(atob(targetData));
-      myData.value = JSON.parse(decoded);
+      const { data, error } = await supabase
+        .from('cards')
+        .select('data')
+        .eq('id', id)
+        .single();
+
+      if (error) throw error;
+
+      if (data) {
+        myData.value = data.data;
+      }
     } catch (e) {
-      console.error(
-        'データの復元に失敗しました。URLが壊れてる可能性があります。',
-        e
-      );
+      console.error('データ取得失敗：', e);
     }
   }
 });
@@ -106,12 +113,12 @@ onMounted(() => {
 /* 画面全体の基盤 */
 .app-viewport {
   position: relative;
-  width: 100%; /* vwから%に変更して突き抜けを防止 */
+  width: 100%;
   min-height: 100vh;
   background-color: #f0f2f5;
   overflow-x: hidden;
   display: flex;
-  flex-direction: column; /* 縦並びを基本にする */
+  flex-direction: column;
 }
 
 /* メイン表示エリア */
@@ -122,17 +129,13 @@ onMounted(() => {
   flex-direction: column;
   align-items: center;
   padding: 40px 20px;
-  /* transitionは特定のプロパティだけに絞る */
   transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
   box-sizing: border-box;
 }
 
-/* PC版：エディタが開いた時に「全体を左にスライド」させる。
-   ただし、画面幅に余裕がある時だけ動かすようにして、右の空白を封じる */
+/* PC版：エディタが開いた時に「全体を左にスライド」させる。*/
 @media (min-width: 1024px) {
   .main-display.editor-open {
-    /* paddingではなくtransformで「表示位置」だけをズラす。
-       右側に480pxのエディタが重なるので、名刺を左に200pxほど逃がすのが一番綺麗 */
     transform: translateX(-200px);
   }
 }
@@ -146,7 +149,7 @@ onMounted(() => {
   font-size: 1.5rem;
   color: #1a202c;
   font-weight: 800;
-  font-family: 'Noto Sans JP', sans-serif; /* ヘッダーのフォント */
+  font-family: 'Noto Sans JP', sans-serif;
 }
 
 .card-container {
@@ -174,7 +177,7 @@ onMounted(() => {
   z-index: 10;
 }
 
-/* エディタとオーバーレイ（前回同様） */
+/* エディタとオーバーレイ */
 .editor-overlay {
   position: fixed;
   inset: 0;

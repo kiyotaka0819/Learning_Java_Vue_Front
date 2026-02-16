@@ -235,16 +235,16 @@ const getCategoryClass = (cat: string | number) => {
 /* フッター */
 .footer {
   margin-top: auto;
-  width: 100%; /* これを明示 */
+  width: 100%;
   display: flex;
-  justify-content: space-between; /* 両端に振り分ける */
+  justify-content: space-between;
   align-items: center;
-  font-size: 11px; /* 少し小さくして上品に */
+  font-size: 11px;
   font-family: 'Noto Sans JP', sans-serif;
   color: #94a3b8;
   padding-top: 12px;
   border-top: 1px solid #f1f5f9;
-  box-sizing: border-box; /* はみ出し防止 */
+  box-sizing: border-box;
 }
 
 .link { 
