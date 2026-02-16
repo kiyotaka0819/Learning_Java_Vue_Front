@@ -49,10 +49,10 @@
       "Ruby",
       "Ruby on Rails",
       "Node.js",
-      "Express.js",
       "Go",
       "Rust",
-      "ASP.NET Core",
+      "Supabase",
+      "Google Apps Script",
       "その他"
     ],
     "DB": [

@@ -18,27 +18,46 @@ const myData = ref<any>({
 const isFlipped = ref(false);
 const isEditMode = ref(false);
 
+// 1. URLを発行する側のロジック
+const copyShareUrl = () => {
+  try {
+    // JSONを文字列にして、URIエンコードしてからBase64に変換
+    const jsonStr = JSON.stringify(myData.value);
+    const base64 = btoa(encodeURIComponent(jsonStr));
+
+    // パラメータ名を短く「d」とかにすると、さらにURLが短縮される
+    const shareUrl = `${window.location.origin}${window.location.pathname}?d=${base64}`;
+
+    navigator.clipboard.writeText(shareUrl).then(() => {
+      alert('LINE等でも送れる共有URLをコピーしました。');
+    });
+  } catch (e) {
+    console.error('URL生成に失敗しました。', e);
+    alert('URL生成に失敗しました。');
+  }
+};
+
+// 2. ページ読み込み時にURLからデータを復元するロジック
 onMounted(() => {
   const params = new URLSearchParams(window.location.search);
-  const base64Data = params.get('data');
-  if (base64Data) {
+  const d = params.get('d');
+  const oldData = params.get('data');
+
+  const targetData = d || oldData;
+
+  if (targetData) {
     try {
-      const decoded = decodeURIComponent(atob(base64Data));
+      // Base64をデコードして、URIデコードしてからJSONに戻す
+      const decoded = decodeURIComponent(atob(targetData));
       myData.value = JSON.parse(decoded);
     } catch (e) {
-      console.error('復元失敗', e);
+      console.error(
+        'データの復元に失敗しました。URLが壊れてる可能性があります。',
+        e
+      );
     }
   }
 });
-
-const copyShareUrl = () => {
-  const jsonStr = JSON.stringify(myData.value);
-  const base64 = btoa(encodeURIComponent(jsonStr));
-  const shareUrl = `${window.location.origin}${window.location.pathname}?data=${base64}`;
-  navigator.clipboard
-    .writeText(shareUrl)
-    .then(() => alert('共有URLをコピーしました。'));
-};
 </script>
 
 <template>
