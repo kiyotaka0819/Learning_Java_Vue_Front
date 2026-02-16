@@ -85,6 +85,13 @@
         "tech": ["TypeScript","Vue3" ],
         "url": "https://kiyotaka0819.github.io/Learning_Java_Vue_Front/business_card",
         "to": "/business_card"
+      },
+      {
+        "name": "ポケモン図鑑アプリ",
+        "description": "Vue3のComposition APIを使ったポケモン図鑑アプリ。",
+        "tech": ["TypeScript","Vue3" ],
+        "url": "https://kiyotaka0819.github.io/Learning_Java_Vue_Front/pokemon_zukan",
+        "to": "/pokemon_zukan"
       }
       ]
       },

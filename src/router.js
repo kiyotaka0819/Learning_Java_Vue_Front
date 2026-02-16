@@ -12,6 +12,7 @@ import Todos from "./views/todos/Todos.vue";
 import WhiteboardTop from "./views/whiteboard/WhiteboardTop.vue";
 import SleepChecker from "./views/sleep_checker/SleepChecker.vue";
 import BusinessCardApp from "./views/business_card/BusinessCardApp.vue";
+import PokemonZukan from "./views/pokemon_zukan/PokemonZukan.vue";
 
 /**
  * ルーティング定義
@@ -47,6 +48,8 @@ const routes = [
   { path: "/sleep_checker", component: SleepChecker },
   // 名刺生成アプリ画面
   { path: "/business_card", component: BusinessCardApp },
+  // ポケモン図鑑アプリ画面
+  { path: "/pokemon_zukan", component: PokemonZukan },
 ];
 
 const router = createRouter({
