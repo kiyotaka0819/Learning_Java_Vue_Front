@@ -1,6 +1,6 @@
 <script setup>
-import pageData from '../components/pageData.json'
-import PortfolioLink from '../components/PortfolioLink.vue' 
+import pageData from '../components/pageData.json';
+import PortfolioLink from '../components/PortfolioLink.vue';
 </script>
 
 <template>

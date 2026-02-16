@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, reactive, markRaw } from 'vue';
+import { ref, reactive, markRaw, onMounted, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router';
 import consts from './jibun_os/consts.json';
 import PokemonZukan from './pokemon_zukan/PokemonZukan.vue';
@@ -8,24 +8,31 @@ import ReadMeEditor from './jibun_os/ReadMeEditor.vue';
 
 const router = useRouter();
 
+// コンポーネントの紐付け
 const componentMap: Record<string, any> = {
   pokedex: markRaw(PokemonZukan),
   'business-card': markRaw(BusinessCardApp),
   'readme-editor': markRaw(ReadMeEditor)
 };
 
+// ウィンドウの状態管理
 const windows = reactive(
   consts.initialWindows.map((win) => ({
     ...win,
     isMaximized: false,
-    content: win.type === 'component' ? componentMap[win.id] : win.content
+    // typeがcomponentならcomponentMapから取得、そうでなければcontent(URL)をそのまま使用
+    content: win.type === 'component' ? componentMap[win.id] : win.content || ''
   }))
 );
+
+// フォルダ（カテゴリ）の開閉状態
+const openFolderId = ref<string | null>(null);
 
 const maxZ = ref(100);
 const isDragging = ref(false);
 const isResizing = ref(false);
 
+// ウィンドウ操作ロジック
 const startDrag = (win: any, e: MouseEvent) => {
   if (win.isMaximized) return;
   win.z = ++maxZ.value;
@@ -80,6 +87,12 @@ const toggleWin = (id: string) => {
   }
 };
 
+const toggleFolder = (folderId: string) => {
+  openFolderId.value = openFolderId.value === folderId ? null : folderId;
+};
+
+const getWinById = (id: string) => windows.find((w) => w.id === id);
+
 const toggleMaximize = (win: any) => {
   if (win.isMaximized) {
     win.x = win.oldX || 100;
@@ -101,6 +114,20 @@ const toggleMaximize = (win: any) => {
 };
 
 const logout = () => router.push('/apps');
+
+// フォルダ外クリックで閉じる処理
+const closeFolderOnOutsideClick = (e: MouseEvent) => {
+  if (!(e.target as HTMLElement).closest('.dock-item')) {
+    openFolderId.value = null;
+  }
+};
+
+onMounted(() =>
+  document.addEventListener('mousedown', closeFolderOnOutsideClick)
+);
+onUnmounted(() =>
+  document.removeEventListener('mousedown', closeFolderOnOutsideClick)
+);
 </script>
 
 <template>
@@ -182,13 +209,38 @@ const logout = () => router.push('/apps');
       <div class="dock-container">
         <div class="dock">
           <div
-            v-for="win in windows"
-            :key="win.id"
+            v-for="cat in consts.categories"
+            :key="cat.id"
             class="dock-item"
-            @click="toggleWin(win.id)"
+            @click="toggleFolder(cat.id)"
           >
-            <span class="dock-icon">{{ win.icon }}</span>
-            <div v-if="win.isOpen" class="active-dot"></div>
+            <span class="dock-icon">{{ cat.icon }}</span>
+            <div class="folder-label">{{ cat.title }}</div>
+
+            <Transition name="folder-pop">
+              <div v-if="openFolderId === cat.id" class="folder-menu">
+                <div
+                  v-for="appId in cat.apps"
+                  :key="appId"
+                  class="folder-app-item"
+                  @click.stop="
+                    toggleWin(appId);
+                    openFolderId = null;
+                  "
+                >
+                  <span class="folder-app-icon">{{
+                    getWinById(appId)?.icon
+                  }}</span>
+                  <span class="folder-app-title">{{
+                    getWinById(appId)?.title
+                  }}</span>
+                  <div
+                    v-if="getWinById(appId)?.isOpen"
+                    class="active-dot-small"
+                  ></div>
+                </div>
+              </div>
+            </Transition>
           </div>
         </div>
       </div>
@@ -197,13 +249,14 @@ const logout = () => router.push('/apps');
 </template>
 
 <style scoped>
+/* 基本コンテナ */
 .os-fullscreen-container {
   position: fixed;
   inset: 0;
   z-index: 999999;
   overflow: hidden;
   background: #000;
-  font-family: sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
 }
 .mac-desktop {
   width: 100%;
@@ -224,16 +277,18 @@ const logout = () => router.push('/apps');
   z-index: 2000000;
 }
 
+/* ウィンドウ関連 */
 .mac-window {
   position: absolute;
-  background: rgba(255, 255, 255, 0.9);
-  backdrop-filter: blur(25px);
+  background: rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(20px) saturate(160%);
   border-radius: 12px;
-  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
   display: flex;
   flex-direction: column;
   overflow: hidden;
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
 }
 .is-dragging .mac-window {
   transition: none !important;
@@ -279,15 +334,16 @@ const logout = () => router.push('/apps');
 .mac-content {
   flex-grow: 1;
   position: relative;
-  background: #fff;
+  background: transparent;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
   overflow: auto;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
 }
-.drag-overlay {
-  position: absolute;
-  inset: 0;
-  z-index: 9999;
+.mac-content::-webkit-scrollbar {
+  width: 8px;
+}
+.mac-content::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
 }
 .app-iframe {
   width: 100%;
@@ -301,32 +357,33 @@ const logout = () => router.push('/apps');
   width: 15px;
   height: 15px;
   cursor: nwse-resize;
-  background: linear-gradient(135deg, transparent 50%, rgba(0, 0, 0, 0.1) 50%);
 }
 
+/* ドックとフォルダ階層システム */
 .dock-container {
   position: absolute;
-  bottom: 15px;
+  bottom: 20px;
   width: 100%;
-  display: center;
+  display: flex;
   justify-content: center;
   z-index: 50;
-  display: flex;
 }
 .dock {
   background: rgba(255, 255, 255, 0.2);
   backdrop-filter: blur(30px);
-  padding: 8px 12px;
-  border-radius: 22px;
+  padding: 10px 15px;
+  border-radius: 24px;
   display: flex;
-  gap: 12px;
+  gap: 15px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 .dock-item {
-  width: 52px;
-  height: 52px;
-  background: rgba(255, 255, 255, 0.9);
-  border-radius: 12px;
+  width: 60px;
+  height: 60px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 14px;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   cursor: pointer;
@@ -334,18 +391,126 @@ const logout = () => router.push('/apps');
   position: relative;
 }
 .dock-item:hover {
-  transform: scale(1.3) translateY(-10px);
+  transform: scale(1.1) translateY(-5px);
 }
-.active-dot {
+.dock-icon {
+  font-size: 24px;
+}
+.folder-label {
+  font-size: 9px;
+  color: #333;
+  font-weight: bold;
+  margin-top: 2px;
+}
+
+/* フォルダポップアップメニュー */
+.folder-menu {
   position: absolute;
-  bottom: -8px;
-  width: 4px;
-  height: 4px;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(40px);
+  border-radius: 18px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 180px;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+.folder-app-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 15px;
+  border-radius: 10px;
+  color: #fff;
+  font-weight: 500;
+  transition: background 0.2s;
+  position: relative;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+.folder-app-item:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+.folder-app-icon {
+  font-size: 20px;
+}
+.folder-app-title {
+  font-size: 14px;
+  white-space: nowrap;
+}
+.active-dot-small {
+  position: absolute;
+  right: 10px;
+  width: 5px;
+  height: 5px;
   background: #fff;
   border-radius: 50%;
 }
+.logout-btn {
+  position: relative;
+  cursor: pointer;
+  padding: 2px 6px;
+  transition: all 0.2s;
+}
 
-/* 吸い込まれるアニメーション (Genie) */
+.logout-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
+  border-radius: 4px;
+}
+
+.logout-btn::after {
+  content: 'ログアウト';
+  position: absolute;
+  top: 35px;
+  right: 0;
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 10px;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.1s ease;
+  transition-delay: 0.2s;
+}
+
+.logout-btn:hover::after {
+  content: 'ログアウト';
+  position: absolute;
+  top: 35px;
+  right: 0;
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 10px;
+  white-space: nowrap;
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.logout-btn::after {
+  transform: translateY(5px);
+}
+
+/* アニメーション */
+.folder-pop-enter-active,
+.folder-pop-leave-active {
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.folder-pop-enter-from,
+.folder-pop-leave-to {
+  opacity: 0;
+  transform: translateX(-50%) translateY(20px) scale(0.8);
+}
+
 .window-genie-enter-active,
 .window-genie-leave-active {
   transition: all 0.4s cubic-bezier(0.55, 0, 0.1, 1);
@@ -358,15 +523,8 @@ const logout = () => router.push('/apps');
   transform: translateY(500px) scale(0.1) !important;
   opacity: 0;
 }
+
 .bold {
   font-weight: bold;
-}
-
-.mac-content::-webkit-scrollbar {
-  display: none;
-}
-.mac-content::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.2);
-  border-radius: 10px;
 }
 </style>

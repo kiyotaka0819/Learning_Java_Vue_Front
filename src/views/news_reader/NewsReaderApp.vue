@@ -24,7 +24,7 @@ onMounted(() => {
     try {
       favorites.value = JSON.parse(savedFavorites);
     } catch (e) {
-      console.error("お気に入りの読み込みエラー:", e);
+      console.error('お気に入りの読み込みエラー:', e);
     }
   }
   // 初期ニュース読み込み
@@ -38,26 +38,26 @@ const formatDate = (dateString) => {
     if (isNaN(date.getTime())) {
       return dateString;
     }
-    const options = { 
-      year: 'numeric', 
-      month: 'long', 
+    const options = {
+      year: 'numeric',
+      month: 'long',
       day: 'numeric',
       hour: '2-digit',
       minute: '2-digit'
     };
     return date.toLocaleDateString('ja-JP', options);
   } catch (e) {
-    console.error("日付のフォーマットエラー:", e);
+    console.error('日付のフォーマットエラー:', e);
     return dateString;
   }
-}
+};
 
 // ニュースを取得する関数 - 最初に動いていたAPIエンドポイントを使用
 async function fetchNews(genre) {
   loading.value = true;
   error.value = null;
   articles.value = [];
-  
+
   // NHKのRSSフィードURL
   const baseUrl = 'https://www3.nhk.or.jp/rss/news/';
   const rssUrl = encodeURIComponent(`${baseUrl}${genre.url}`);
@@ -85,42 +85,40 @@ async function fetchNews(genre) {
 const onGenreSelected = (genre) => {
   currentGenre.value = genre;
   fetchNews(genre);
-}
+};
 
 // お気に入り追加関数
 const addFavorite = (genre) => {
   if (!isFavorite(genre)) {
-    favorites.value.push({...genre});
+    favorites.value.push({ ...genre });
     saveFavorites();
   }
-}
+};
 // お気に入り削除関数
 const removeFavorite = (genre) => {
-  favorites.value = favorites.value.filter(fav => fav.id !== genre.id);
+  favorites.value = favorites.value.filter((fav) => fav.id !== genre.id);
   saveFavorites();
-}
+};
 // お気に入りに追加対象があるのかを判別する関数
 const isFavorite = (genre) => {
-  return favorites.value.some(fav => fav.id === genre.id);
-}
+  return favorites.value.some((fav) => fav.id === genre.id);
+};
 // お気に入りをlocalStorageに保存する関数
 const saveFavorites = () => {
   localStorage.setItem('favoriteGenres', JSON.stringify(favorites.value));
-}
-
-
+};
 </script>
 
 <template>
   <div class="news-container">
     <h1>NHKニュースリーダー</h1>
-    
+
     <!-- お気に入り機能 -->
     <div class="favorites">
       <h3>お気に入りジャンル</h3>
       <div v-if="favorites.length > 0">
-        <button 
-          v-for="genre in favorites" 
+        <button
+          v-for="genre in favorites"
           :key="genre.id"
           @click="onGenreSelected(genre)"
           class="fav-button"
@@ -133,8 +131,8 @@ const saveFavorites = () => {
         <p>お気に入りジャンルを追加してください</p>
       </div>
       <div class="add-fav">
-        <button 
-          v-if="!isFavorite(currentGenre)" 
+        <button
+          v-if="!isFavorite(currentGenre)"
           @click="addFavorite(currentGenre)"
           class="add-button"
         >
@@ -142,13 +140,13 @@ const saveFavorites = () => {
         </button>
       </div>
     </div>
-    
+
     <!-- ジャンル選択 -->
     <div class="genre-selector">
       <h3>ジャンル選択</h3>
       <div class="genre-buttons">
-        <button 
-          v-for="genre in genres" 
+        <button
+          v-for="genre in genres"
           :key="genre.id"
           @click="onGenreSelected(genre)"
           class="genre-button"
@@ -158,22 +156,26 @@ const saveFavorites = () => {
         </button>
       </div>
     </div>
-    
+
     <div v-if="loading" class="loading">
       <Spinner></Spinner>
     </div>
-    
+
     <div v-else-if="error" class="error">
       エラーが発生しました: {{ error }}
-      <button @click="fetchNews(currentGenre)" class="retry-button">再読み込み</button>
+      <button @click="fetchNews(currentGenre)" class="retry-button">
+        再読み込み
+      </button>
     </div>
-    
+
     <div v-else>
       <p>現在表示中: {{ currentGenre.name }}</p>
-      
+
       <ul class="news-list">
         <li v-for="item in articles" :key="item.guid" class="news-item">
-          <a :href="item.link" target="_blank" rel="noopener">{{ item.title }}</a>
+          <a :href="item.link" target="_blank" rel="noopener">{{
+            item.title
+          }}</a>
           <p class="date">{{ formatDate(item.pubDate) }}</p>
           <div class="description" v-html="item.description"></div>
         </li>
@@ -223,7 +225,7 @@ a:hover {
   margin-right: 0.5em;
   margin-bottom: 0.5em;
   padding: 0.3em 0.6em;
-  background-color: #4CAF50;
+  background-color: #4caf50;
   color: white;
   border: none;
   border-radius: 4px;
@@ -238,7 +240,7 @@ a:hover {
 .add-button {
   margin-top: 0.5em;
   padding: 0.3em 0.6em;
-  background-color: #2196F3;
+  background-color: #2196f3;
   color: white;
   border: none;
   border-radius: 4px;

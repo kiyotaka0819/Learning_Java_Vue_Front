@@ -72,8 +72,7 @@ onMounted(async () => {
 <template>
   <div class="app-viewport">
     <main class="main-display" :class="{ 'editor-open': isEditMode }">
-      <header class="app-header">
-      </header>
+      <header class="app-header"></header>
 
       <div class="card-container">
         <BusinessCard

@@ -111,7 +111,9 @@ const getCategoryClass = (cat: string | number) => {
   transform-style: preserve-3d;
 }
 
-.card-inner.is-flipped { transform: rotateY(180deg); }
+.card-inner.is-flipped {
+  transform: rotateY(180deg);
+}
 
 .card-side {
   width: 100%;
@@ -123,66 +125,88 @@ const getCategoryClass = (cat: string | number) => {
   box-sizing: border-box;
 }
 
-.card-front { 
-  position: relative; 
-  padding: 30px; 
-  min-height: 340px; 
+.card-front {
+  position: relative;
+  padding: 30px;
+  min-height: 340px;
   display: flex;
   flex-direction: column;
 }
 
 .card-back {
   position: absolute;
-  top: 50%; left: 0;
+  top: 50%;
+  left: 0;
   transform: translateY(-50%) rotateY(180deg);
-  height: 100%; 
+  height: 100%;
   max-height: 340px;
-  padding: 30px; 
+  padding: 30px;
   background: #f8fafc;
   display: flex;
   flex-direction: column;
 }
 
 /* タイポグラフィ */
-.name-row { 
-  display: flex; 
-  align-items: baseline; 
+.name-row {
+  display: flex;
+  align-items: baseline;
   gap: 12px;
   font-family: 'Noto Serif JP', serif;
 }
-.name { font-size: 2rem; font-weight: 700; color: #1a202c; }
-.age { font-size: 1.2rem; color: #718096; }
-
-.job { 
-  color: #059669; 
-  font-weight: bold; 
-  margin-top: 8px; 
-  font-size: 1.1rem; 
-  font-family: 'Noto Sans JP', sans-serif; 
+.name {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1a202c;
+}
+.age {
+  font-size: 1.2rem;
+  color: #718096;
 }
 
-.line { border: none; border-top: 2px solid #1a202c; margin: 15px 0; }
+.job {
+  color: #059669;
+  font-weight: bold;
+  margin-top: 8px;
+  font-size: 1.1rem;
+  font-family: 'Noto Sans JP', sans-serif;
+}
+
+.line {
+  border: none;
+  border-top: 2px solid #1a202c;
+  margin: 15px 0;
+}
 
 /* スキルセクションのレイアウト */
-.skills-container { flex: 1; margin-bottom: 20px; }
+.skills-container {
+  flex: 1;
+  margin-bottom: 20px;
+}
 .skills-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 16px;
 }
-.skill-group { border-left: 2px solid #e2e8f0; padding-left: 10px; }
+.skill-group {
+  border-left: 2px solid #e2e8f0;
+  padding-left: 10px;
+}
 
-.cat-label { 
-  font-size: 11px; 
-  font-weight: 800; 
-  color: #94a3b8; 
-  text-transform: uppercase; 
-  margin-bottom: 8px; 
-  display: block; 
+.cat-label {
+  font-size: 11px;
+  font-weight: 800;
+  color: #94a3b8;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  display: block;
   font-family: 'Noto Sans JP', sans-serif;
 }
 
-.tags { display: flex; flex-wrap: wrap; gap: 4px; }
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
 
 /* 【復活】スキルタグの色分け設定 */
 .tag {
@@ -195,20 +219,44 @@ const getCategoryClass = (cat: string | number) => {
   font-family: 'Noto Sans JP', sans-serif;
 }
 /* カテゴリ別の配色 */
-.tag.front { background: #f0fdf4; color: #166534; border-color: #dcfce7; }
-.tag.back { background: #eff6ff; color: #1e40af; border-color: #dbeafe; }
-.tag.infra { background: #fff7ed; color: #9a3412; border-color: #ffedd5; }
-.tag.db { background: #f5f3ff; color: #5b21b6; border-color: #ede9fe; }
-.tag.pm { background: #fef2f2; color: #991b1b; border-color: #fee2e2; }
-.tag.tool { background: #f8fafc; color: #64748b; border-color: #e2e8f0; }
+.tag.front {
+  background: #f0fdf4;
+  color: #166534;
+  border-color: #dcfce7;
+}
+.tag.back {
+  background: #eff6ff;
+  color: #1e40af;
+  border-color: #dbeafe;
+}
+.tag.infra {
+  background: #fff7ed;
+  color: #9a3412;
+  border-color: #ffedd5;
+}
+.tag.db {
+  background: #f5f3ff;
+  color: #5b21b6;
+  border-color: #ede9fe;
+}
+.tag.pm {
+  background: #fef2f2;
+  color: #991b1b;
+  border-color: #fee2e2;
+}
+.tag.tool {
+  background: #f8fafc;
+  color: #64748b;
+  border-color: #e2e8f0;
+}
 
 /* 裏面：キャッチコピー */
-.copy { 
-  font-size: 1.2rem; 
-  font-weight: bold; 
-  text-align: center; 
-  margin: 20px 0; 
-  color: #1a202c; 
+.copy {
+  font-size: 1.2rem;
+  font-weight: bold;
+  text-align: center;
+  margin: 20px 0;
+  color: #1a202c;
   font-family: 'Noto Serif JP', serif;
   line-height: 1.6;
 }
@@ -228,7 +276,7 @@ const getCategoryClass = (cat: string | number) => {
   max-width: 100%;
   height: auto;
   display: block;
-  object-fit: contain; 
+  object-fit: contain;
   filter: saturate(1.2);
 }
 
@@ -247,15 +295,15 @@ const getCategoryClass = (cat: string | number) => {
   box-sizing: border-box;
 }
 
-.link { 
-  color: #1e293b; 
-  text-decoration: none; 
-  font-weight: bold; 
+.link {
+  color: #1e293b;
+  text-decoration: none;
+  font-weight: bold;
   border-bottom: 1px solid #cbd5e0;
   flex-shrink: 0;
 }
 
-.flip-hint { 
+.flip-hint {
   font-style: italic;
   text-align: right;
   flex-grow: 1;
@@ -263,9 +311,17 @@ const getCategoryClass = (cat: string | number) => {
 
 /* スマホ対応 */
 @media (max-width: 600px) {
-  .card-front { padding: 20px; }
-  .card-back { padding: 20px; }
-  .name { font-size: 1.6rem; }
-  .skills-grid { grid-template-columns: 1fr; }
+  .card-front {
+    padding: 20px;
+  }
+  .card-back {
+    padding: 20px;
+  }
+  .name {
+    font-size: 1.6rem;
+  }
+  .skills-grid {
+    grid-template-columns: 1fr;
+  }
 }
 </style>

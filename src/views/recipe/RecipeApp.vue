@@ -6,8 +6,8 @@ const recipeResult = ref('');
 const isLoading = ref(false);
 
 // APIの設定（本来は環境変数に入れるのがセーフティやけど、まずは動かすの優先やな）
-const genAI = new GoogleGenerativeAI("AIzaSyBtTvJzhBTUyLy63_Qh0E4kmaublgMhohM");
-const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+const genAI = new GoogleGenerativeAI('AIzaSyBtTvJzhBTUyLy63_Qh0E4kmaublgMhohM');
+const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
 
 async function generateRecipe(weatherInfo) {
   isLoading.value = true;
@@ -19,8 +19,8 @@ async function generateRecipe(weatherInfo) {
     const result = await model.generateContent(prompt);
     recipeResult.value = result.response.text();
   } catch (error) {
-    console.error("APIエラーや：", error);
-    recipeResult.value = "エラーが発生したわ、堪忍な。";
+    console.error('APIエラーや：', error);
+    recipeResult.value = 'エラーが発生したわ、堪忍な。';
   } finally {
     isLoading.value = false;
   }
@@ -30,8 +30,11 @@ async function generateRecipe(weatherInfo) {
 <template>
   <div class="recipe-app">
     <h2>AI献立アドバイザー</h2>
-    
-    <button @click="generateRecipe({temp: 25, condition: '晴れ'})" :disabled="isLoading">
+
+    <button
+      @click="generateRecipe({ temp: 25, condition: '晴れ' })"
+      :disabled="isLoading"
+    >
       {{ isLoading ? '考え中や...' : 'レシピを提案してもらう' }}
     </button>
 

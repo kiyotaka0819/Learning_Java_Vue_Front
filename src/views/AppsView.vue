@@ -1,6 +1,6 @@
 <script setup>
-import pageData from '../components/pageData.json'
-import AppCard from '../components/AppCard.vue'
+import pageData from '../components/pageData.json';
+import AppCard from '../components/AppCard.vue';
 </script>
 
 <template>
@@ -13,7 +13,7 @@ import AppCard from '../components/AppCard.vue'
       :description="app.description"
       :tech="app.tech"
       :url="app.url"
-      :to="app.to" 
+      :to="app.to"
     />
   </div>
 </template>

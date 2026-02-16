@@ -1,16 +1,16 @@
 <script setup>
-import pageData from '../components/pageData.json'
+import pageData from '../components/pageData.json';
 </script>
 
 <template>
   <div v-if="pageData" class="about-content">
     <h2>{{ pageData.about.title }}</h2>
-    
+
     <div class="profile-card">
       <p><strong>名前:</strong> {{ pageData.about.name }}</p>
       <p class="description-text">{{ pageData.about.bio }}</p>
     </div>
-    
+
     <div class="skills-section">
       <h3>スキルセット</h3>
       <p class="skills-list">
@@ -20,8 +20,14 @@ import pageData from '../components/pageData.json'
 
     <div class="learning-section" v-if="pageData.about.learning">
       <h3>学習状況 & 指針</h3>
-      <div v-for="item in pageData.about.learning" :key="item.category" class="learning-item">
-        <p><strong>{{ item.category }}:</strong></p>
+      <div
+        v-for="item in pageData.about.learning"
+        :key="item.category"
+        class="learning-item"
+      >
+        <p>
+          <strong>{{ item.category }}:</strong>
+        </p>
         <p class="learning-detail">{{ item.detail }}</p>
       </div>
     </div>
@@ -35,7 +41,8 @@ import pageData from '../components/pageData.json'
 }
 
 /* AppCardと統一したホバースタイル */
-.profile-card, .learning-item {
+.profile-card,
+.learning-item {
   margin-bottom: 20px;
   padding: 20px;
   border: 1px solid rgba(128, 128, 128, 0.2);
@@ -44,8 +51,9 @@ import pageData from '../components/pageData.json'
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-.profile-card:hover, .learning-item:hover {
-  background-color: var(--bg-color); 
+.profile-card:hover,
+.learning-item:hover {
+  background-color: var(--bg-color);
   transform: translateY(-5px);
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
   border-color: #42b983;
@@ -57,9 +65,11 @@ h3 {
   margin: 30px 0 15px;
 }
 
-.description-text, .learning-detail, .skills-list {
+.description-text,
+.learning-detail,
+.skills-list {
   white-space: pre-wrap;
-  color: inherit; 
+  color: inherit;
   opacity: 0.9;
   margin-top: 5px;
 }

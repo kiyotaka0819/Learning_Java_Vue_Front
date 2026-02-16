@@ -1,28 +1,28 @@
 <script setup>
-import { ref } from 'vue'
-import { supabase } from '../../lib/supabaseClient'
+import { ref } from 'vue';
+import { supabase } from '../../lib/supabaseClient';
 
-const email = ref('')
-const password = ref('')
+const email = ref('');
+const password = ref('');
 
 // 新規登録
 const handleSignUp = async () => {
   const { error } = await supabase.auth.signUp({
     email: email.value,
-    password: password.value,
-  })
-  if (error) alert(error.message)
-  else alert('登録完了！メールを確認')
-}
+    password: password.value
+  });
+  if (error) alert(error.message);
+  else alert('登録完了！メールを確認');
+};
 
 // ログイン
 const handleLogin = async () => {
   const { error } = await supabase.auth.signInWithPassword({
     email: email.value,
-    password: password.value,
-  })
-  if (error) alert(error.message)
-}
+    password: password.value
+  });
+  if (error) alert(error.message);
+};
 </script>
 
 <template>

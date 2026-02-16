@@ -1,67 +1,51 @@
 {
+  "categories": [
+    {
+      "id": "utility",
+      "title": "Utility",
+      "icon": "🛠️",
+      "apps": ["pokedex", "business-card"]
+    },
+    {
+      "id": "tools",
+      "title": "Tool",
+      "icon": "🧰",
+      "apps": ["readme-editor", "code-editor", "Map"]
+    }
+  ],
   "initialWindows": [
     {
       "id": "pokedex",
       "title": "ポケモン図鑑",
-      "x": 50,
-      "y": 80,
-      "width": 400,
-      "height": 550,
-      "z": 10,
-      "isOpen": false,
-      "icon": "🐾",
-      "type": "component"
+      "x": 50, "y": 80, "width": 400, "height": 550, "z": 10,
+      "isOpen": false, "icon": "🐾", "type": "component"
     },
     {
       "id": "business-card",
       "title": "名刺アプリ",
-      "x": 480,
-      "y": 120,
-      "width": 450,
-      "height": 500,
-      "z": 11,
-      "isOpen": false,
-      "icon": "📇",
-      "type": "component",
+      "x": 480, "y": 120, "width": 450, "height": 500, "z": 11,
+      "isOpen": false, "icon": "📇", "type": "component",
       "props": { "id": "be310f03-9616-41ca-9d97-eeb45b6b6fed" }
     },
     {
       "id": "code-editor",
-      "title": "Visual Studio Code",
-      "x": 250,
-      "y": 40,
-      "width": 900,
-      "height": 600,
-      "z": 20,
-      "isOpen": false,
-      "icon": "💙",
-      "type": "iframe",
+      "title": "Vue SFC PlayGround",
+      "x": 250, "y": 40, "width": 900, "height": 600, "z": 20,
+      "isOpen": false, "icon": "💙", "type": "iframe",
       "content": "https://play.vuejs.org/"
     },
     {
       "id": "readme-editor",
       "title": "README.md",
-      "x": 300,
-      "y": 30,
-      "width": 600,
-      "height": 600,
-      "z": 21,
-      "isOpen": true,
-      "icon": "📝",
-      "type": "component"
+      "x": 300, "y": 30, "width": 600, "height": 600, "z": 21,
+      "isOpen": true, "icon": "📝", "type": "component"
     },
     {
-      "id": "Browser",
+      "id": "Map",
       "title": "Google Maps",
-      "x": 250,
-      "y": 40,
-      "width": 900,
-      "height": 600,
-      "z": 20,
-      "isOpen": false,
-      "icon": "🗺️",
-      "type": "iframe",
-      "content": "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3240.8280303808788!2d139.764549876356!3d35.681236130105995!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x60188bfbd89f700b%3A0x277a448d3a7c3c1b!2z5p2x5Lqs6aeF!5e0!3m2!1sja!2sjp!4v1710000000000!5m2!1sja!2sjp"
+      "x": 250, "y": 40, "width": 900, "height": 600, "z": 20,
+      "isOpen": false, "icon": "🗺️", "type": "iframe",
+      "content": "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3240.8280303808788!2d139.7649361!3d35.6812362!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x60188bfbd89f7153%3A0x41377402610731!2z5p2x5Lqs6aeF!5e0!3m2!1sja!2sjp!4v1710000000000!5m2!1sja!2sjp"
     }
   ]
 }

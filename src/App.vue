@@ -24,21 +24,23 @@ const isDarkMode = ref(false);
 // モードを切り替える関数
 const toggleDarkMode = () => {
   isDarkMode.value = !isDarkMode.value;
-}
+};
 // ダークモードの切り替えを監視
-watch(isDarkMode, (newVal) => {
-  if (newVal) {
-    document.body.classList.add('dark-mode-body');
-  } else {
-    document.body.classList.remove('dark-mode-body');
-  }
-}, { immediate: true }); // 初期化時にも実行
-
+watch(
+  isDarkMode,
+  (newVal) => {
+    if (newVal) {
+      document.body.classList.add('dark-mode-body');
+    } else {
+      document.body.classList.remove('dark-mode-body');
+    }
+  },
+  { immediate: true }
+); // 初期化時にも実行
 </script>
 
 <template>
   <div :class="['portfolio-container', { 'dark-mode': isDarkMode }]">
-    
     <header>
       <h1>My Portfolio</h1>
       <p>天本のポートフォリオサイト</p>
@@ -46,14 +48,14 @@ watch(isDarkMode, (newVal) => {
         {{ isDarkMode ? 'ライトモード' : 'ダークモード' }}
       </button>
     </header>
-    
+
     <nav class="main-menu">
       <button @click="$router.push('/')">ホーム</button>
       <button @click="$router.push('/apps')">アプリ</button>
       <button @click="$router.push('/portfolio')">ポートフォリオ</button>
       <button @click="$router.push('/about')">ABOUT ME</button>
     </nav>
-    
+
     <main class="page-content">
       <router-view v-slot="{ Component }">
         <transition name="fade" mode="out-in">
@@ -61,7 +63,6 @@ watch(isDarkMode, (newVal) => {
         </transition>
       </router-view>
     </main>
-
   </div>
 </template>
 <style>
@@ -70,7 +71,9 @@ body {
   padding: 0;
   background-color: #ffffff;
   color: #333333;
-  transition: background-color 0.3s ease, color 0.3s ease;
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
 }
 body.dark-mode-body {
   background-color: #1a1a1a !important;
@@ -79,7 +82,7 @@ body.dark-mode-body {
 .dark-mode-body * {
   border-color: rgba(255, 255, 255, 0.1) !important;
 }
-.dark-mode-body .description, 
+.dark-mode-body .description,
 .dark-mode-body .date {
   color: #ccc !important;
 }
@@ -90,7 +93,7 @@ body.dark-mode-body {
   --bg-color: #ffffff;
   --text-color: #333333;
   --border-color: #cccccc;
-  
+
   max-width: 900px; /* 少し広めに */
   margin: 0 auto;
   padding: 40px 20px;

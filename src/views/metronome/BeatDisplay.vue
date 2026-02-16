@@ -2,12 +2,12 @@
 // props（親から受け取るデータ）を定義
 const props = defineProps({
   currentBeat: {
-    type: Number,      // 数値型
-    required: true,    // 必須
+    type: Number, // 数値型
+    required: true // 必須
   },
   totalBeats: {
     type: Number,
-    default: 4,        // デフォルト値は4
+    default: 4 // デフォルト値は4
   }
 });
 </script>
@@ -15,14 +15,14 @@ const props = defineProps({
 <template>
   <div class="beat-display">
     <h3>現在のビート</h3>
-    <div 
-      v-for="beat in totalBeats" 
+    <div
+      v-for="beat in totalBeats"
       :key="beat"
       class="beat-circle"
       :class="{ active: beat === currentBeat }"
     >
-    {{ beat }}
-  </div>
+      {{ beat }}
+    </div>
   </div>
 </template>
 
@@ -37,12 +37,12 @@ const props = defineProps({
   justify-content: center;
   font-size: 20px;
   font-weight: bold;
-  transition: all 0.1s;  /* アニメーション */
+  transition: all 0.1s; /* アニメーション */
 }
 
 .beat-circle.active {
-  background: #4CAF50;  /* 緑色 */
+  background: #4caf50; /* 緑色 */
   color: white;
-  transform: scale(1.2);  /* 少し大きく */
+  transform: scale(1.2); /* 少し大きく */
 }
 </style>

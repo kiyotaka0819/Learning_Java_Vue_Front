@@ -1,42 +1,27 @@
 <script setup>
+defineProps({
+  name: String,
 
-  defineProps({
-
-   name: String,
-
-   url: String,
-
-  })
-
+  url: String
+});
 </script>
 
-
-
 <template>
-
   <div class="link-item">
-
     <h3>名前: {{ name }}</h3>
 
     <a :href="url" target="_blank">{{ url }}</a>
-
   </div>
-
 </template>
 
-
-
 <style scoped>
-
-.link-item{
+.link-item {
   margin-bottom: 20px;
   padding-bottom: 20px;
   border-bottom: 1px solid rgba(128, 128, 128, 0.3);
 }
 
-
-
-.link-item:last-child{
+.link-item:last-child {
   border-bottom: none;
 }
 
@@ -45,7 +30,7 @@ a {
   text-decoration: none;
 }
 
-a:hover{
+a:hover {
   text-decoration: underline;
 }
 </style>
