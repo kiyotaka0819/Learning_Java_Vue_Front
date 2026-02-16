@@ -31,6 +31,8 @@ Vue3で構築した仮想デスクトップ環境。
 
 ---
 ## 更新履歴
+- **02-16 17:39**: OS表示更新
+- **02-16 07:27**: chore: update readme log [skip ci]
 - **02-16 16:27**: Map機能の追加
 - **02-16 06:11**: chore: update readme log [skip ci]
 - **02-16 06:10**: Merge branch 'main' of https://github.com/kiyotaka0819/Learning_Java_Vue_Front
@@ -54,5 +56,3 @@ Vue3で構築した仮想デスクトップ環境。
 - **02-03 01:22**: package変更し404修正
 - **02-03 01:15**: publicフォルダ作成し、404を移動
 - **02-03 01:11**: ビルドに404を追加
-- **02-03 00:57**: 404エラー調整
-- **02-03 00:54**: 404回避調整
