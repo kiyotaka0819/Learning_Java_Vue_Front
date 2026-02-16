@@ -50,12 +50,13 @@ jobs:
 
       - name: Update README Section
         run: |
-          echo "## 💾 Recent System Updates (Latest 25)" > updates.tmp
+          echo "## 更新履歴" > updates.tmp
           git log -25 --pretty=format:"- **%ad**: %s" --date=format:"%m-%d %H:%M" >> updates.tmp
           
-          if grep -q "## 💾 Recent System Updates" README.md; then
-            sed -i '/## 💾 Recent System Updates/,$d' README.md
+          if grep -q "## 更新履歴" README.md; then
+            sed -i '/## 更新履歴/,$d' README.md
           fi
+          
           cat updates.tmp >> README.md
           rm updates.tmp
           
