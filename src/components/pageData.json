@@ -25,13 +25,6 @@
         "to": "/weather"
       },
       {
-        "name": "AI献立アドバイザー",
-        "description": "Gemini APIを活用し、現在の天候や気温から最適なレシピを提案するAIアプリ。\nプロンプトエンジニアリングを用いて、実用的な出力を実現しました。",
-        "tech": ["Vue3", "Gemini API", "Google Generative AI SDK", "Web API"],
-        "url": "https://kiyotaka0819.github.io/Learning_Java_Vue_Front/recipe",
-        "to": "/recipe"
-      },
-      {
         "name": "ギター練習アプリ",
         "description": "自身の練習管理を効率化するため、Google Apps Script (GAS) を介してスプレッドシートをDBとして活用。",
         "tech": ["JavaScript", "GAS", "スプレッドシート", "Vue3"],
@@ -92,6 +85,13 @@
         "tech": ["TypeScript","Vue3" ],
         "url": "https://kiyotaka0819.github.io/Learning_Java_Vue_Front/pokemon_zukan",
         "to": "/pokemon_zukan"
+      },
+      {
+        "name": "自分用のOSアプリ",
+        "description": "Vue3で構築した仮想デスクトップ環境。フルスクリーンで、OSさながらの操作体験が可能です。",
+        "tech": ["TypeScript", "Vue3", "Window Management Logic"],
+        "url": "https://kiyotaka0819.github.io/Learning_Java_Vue_Front/jibun_os",
+        "to": "/jibun_os"
       }
       ]
       },

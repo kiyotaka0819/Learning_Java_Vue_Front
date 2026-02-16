@@ -1,0 +1,34 @@
+{
+  "initialWindows": [
+    {
+      "id": "pokedex",
+      "title": "ポケモン図鑑",
+      "x": 50, "y": 80, "width": 400, "height": 550,
+      "z": 10, "isOpen": false, "icon": "🐾",
+      "type": "component"
+    },
+    {
+      "id": "business-card",
+      "title": "名刺アプリ",
+      "x": 480, "y": 120, "width": 450, "height": 500,
+      "z": 11, "isOpen": false, "icon": "📇",
+      "type": "component",
+      "props": { "id": "be310f03-9616-41ca-9d97-eeb45b6b6fed" }
+    },
+    {
+      "id": "code-editor",
+      "title": "Visual Studio Code",
+      "x": 250, "y": 40, "width": 900, "height": 600,
+      "z": 20, "isOpen": false, "icon": "💙",
+      "type": "iframe",
+      "content": "https://play.vuejs.org/"
+    },
+    {
+      "id": "readme-editor",
+      "title": "README.md",
+      "x": 300, "y": 30, "width": 600, "height": 600,
+      "z": 21, "isOpen": true, "icon": "📝",
+      "type": "component"
+    }
+  ]
+}

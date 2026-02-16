@@ -5,6 +5,11 @@ import BusinessCard from './BusinessCard.vue';
 import EditorPanel from './EditorPanel.vue';
 import { supabase } from '../../lib/supabaseClient';
 
+// OSから渡される用
+const props = defineProps({
+  id: String
+});
+
 const myData = ref<any>({
   name: '',
   ruby: '',
@@ -19,10 +24,9 @@ const myData = ref<any>({
 const isFlipped = ref(false);
 const isEditMode = ref(false);
 
-// 1. Supabaseへ保存して短いURLを発行
+// 1. Supabaseへ保存
 const copyShareUrl = async () => {
   try {
-    // DBにmyDataの内容をjsonbとして保存
     const { data, error } = await supabase
       .from('cards')
       .insert([{ data: myData.value }])
@@ -31,9 +35,7 @@ const copyShareUrl = async () => {
 
     if (error) throw error;
 
-    // IDだけを乗せた短いURLを生成
     const shareUrl = `${window.location.origin}${window.location.pathname}?id=${data.id}`;
-
     await navigator.clipboard.writeText(shareUrl);
     alert('URLをコピーしました。');
   } catch (e) {
@@ -42,21 +44,21 @@ const copyShareUrl = async () => {
   }
 };
 
-// 2. URLのIDからデータを復元
+// 2. データ復元ロジック
 onMounted(async () => {
   const params = new URLSearchParams(window.location.search);
-  const id = params.get('id');
+  // Propsを最優先、なければURLからIDを取得
+  const targetId = props.id || params.get('id');
 
-  if (id) {
+  if (targetId) {
     try {
       const { data, error } = await supabase
         .from('cards')
         .select('data')
-        .eq('id', id)
+        .eq('id', targetId)
         .single();
 
       if (error) throw error;
-
       if (data) {
         myData.value = data.data;
       }
@@ -71,7 +73,6 @@ onMounted(async () => {
   <div class="app-viewport">
     <main class="main-display" :class="{ 'editor-open': isEditMode }">
       <header class="app-header">
-        <h1>{{ myData.name || '無名' }} のWeb名刺</h1>
       </header>
 
       <div class="card-container">
@@ -98,7 +99,6 @@ onMounted(async () => {
     <Transition name="slide">
       <aside v-if="isEditMode" class="side-editor">
         <div class="drag-handle" @click="isEditMode = false"></div>
-
         <EditorPanel
           v-model="myData"
           :sample="consts.sample"
@@ -110,11 +110,11 @@ onMounted(async () => {
 </template>
 
 <style scoped>
-/* 画面全体の基盤 */
+/* 画面全体の基盤（OSのウィンドウ内で%基準にする） */
 .app-viewport {
   position: relative;
   width: 100%;
-  min-height: 100vh;
+  min-height: 100%;
   background-color: #f0f2f5;
   overflow-x: hidden;
   display: flex;
@@ -128,49 +128,47 @@ onMounted(async () => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 40px 20px;
+  padding: 20px;
   transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
   box-sizing: border-box;
 }
 
-/* PC版：エディタが開いた時に「全体を左にスライド」させる。*/
+/* PC版：エディタが開いた時にスライド */
 @media (min-width: 1024px) {
   .main-display.editor-open {
-    transform: translateX(-200px);
+    transform: translateX(-150px);
   }
 }
 
 .app-header {
-  margin-bottom: 30px;
+  margin-bottom: 20px;
   text-align: center;
 }
 
 .app-header h1 {
-  font-size: 1.5rem;
+  font-size: 1.2rem;
   color: #1a202c;
   font-weight: 800;
-  font-family: 'Noto Sans JP', sans-serif;
 }
 
 .card-container {
   width: 100%;
-  max-width: 550px;
+  max-width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 25px;
+  gap: 20px;
 }
 
 .edit-toggle-btn {
   background: white;
   color: #1a202c;
   border: 1px solid #cbd5e0;
-  padding: 14px 32px;
+  padding: 10px 24px;
   border-radius: 30px;
   font-weight: bold;
   cursor: pointer;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  transition: all 0.2s;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -179,7 +177,7 @@ onMounted(async () => {
 
 /* エディタとオーバーレイ */
 .editor-overlay {
-  position: fixed;
+  position: absolute; /* fixedから変更 */
   inset: 0;
   background: rgba(0, 0, 0, 0.3);
   backdrop-filter: blur(2px);
@@ -187,21 +185,30 @@ onMounted(async () => {
 }
 
 .side-editor {
-  position: fixed;
+  position: absolute; /* fixedから変更 */
   top: 0;
   right: 0;
-  width: 480px;
-  height: 100vh;
+  width: 350px;
+  height: 100%;
   background: white;
   box-shadow: -10px 0 30px rgba(0, 0, 0, 0.15);
   z-index: 100;
   overflow-y: auto;
 }
 
-/* アニメーション設定 */
+.drag-handle {
+  height: 4px;
+  width: 40px;
+  background: #e2e8f0;
+  border-radius: 2px;
+  margin: 12px auto;
+  cursor: pointer;
+}
+
+/* アニメーション */
 .slide-enter-active,
 .slide-leave-active {
-  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .slide-enter-from,
 .slide-leave-to {
@@ -209,7 +216,7 @@ onMounted(async () => {
 }
 .fade-enter-active,
 .fade-leave-active {
-  transition: opacity 0.4s;
+  transition: opacity 0.3s;
 }
 .fade-enter-from,
 .fade-leave-to {
@@ -219,17 +226,14 @@ onMounted(async () => {
 @media (max-width: 1023px) {
   .side-editor {
     width: 100%;
-    height: 85vh;
+    height: 70%;
     top: auto;
     bottom: 0;
-    border-radius: 24px 24px 0 0;
+    border-radius: 20px 20px 0 0;
   }
   .slide-enter-from,
   .slide-leave-to {
     transform: translateY(100%);
-  }
-  .main-display.editor-open {
-    transform: translateY(-30px);
   }
 }
 </style>

@@ -1,16 +1,16 @@
-# .github/workflows/deploy.yml
-name: Deploy to GitHub Pages
+name: Deploy and Update README
 
 on:
   push:
     branches: [ main ]
 
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 
 jobs:
+  # --- ジョブ1: ビルドとデプロイ ---
   build-and-deploy:
     runs-on: ubuntu-latest
     steps:
@@ -37,3 +37,32 @@ jobs:
 
       - name: Deploy to GitHub Pages
         uses: actions/deploy-pages@v4
+
+  # --- ジョブ2: READMEの更新履歴をアップデート ---
+  update-readme:
+    if: "!contains(github.event.head_commit.message, 'chore: update readme log')"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 
+
+      - name: Update README Section
+        run: |
+          echo "## 💾 Recent System Updates (Latest 25)" > updates.tmp
+          git log -25 --pretty=format:"- **%ad**: %s" --date=format:"%m-%d %H:%M" >> updates.tmp
+          
+          if grep -q "## 💾 Recent System Updates" README.md; then
+            sed -i '/## 💾 Recent System Updates/,$d' README.md
+          fi
+          cat updates.tmp >> README.md
+          rm updates.tmp
+          
+      - name: Commit and Push changes
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add README.md
+          git commit -m "chore: update readme log [skip ci]"
+          git push
