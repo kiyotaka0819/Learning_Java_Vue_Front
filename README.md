@@ -31,6 +31,10 @@ Vue3で構築した仮想デスクトップ環境。
 
 ---
 ## 更新履歴
+- **02-17 17:30**: デプロイ条件変更
+- **02-17 17:28**: Merge branch 'main' of https://github.com/kiyotaka0819/learning_java_vue_front.git
+- **02-17 17:27**: デプロイ時条件変更
+- **02-17 08:25**: chore: update readme log [skip ci]
 - **02-17 17:24**: Merge branch 'main' of https://github.com/kiyotaka0819/learning_java_vue_front.git
 - **02-17 17:20**: スクロールバーの表示、透明度など調整
 - **02-17 03:09**: chore: update readme log [skip ci]
@@ -52,7 +56,3 @@ Vue3で構築した仮想デスクトップ環境。
 - **02-16 06:04**: chore: update readme log [skip ci]
 - **02-16 06:04**: 仮想OSの追加、READMEのCI/CD化
 - **02-16 02:11**: ポケモン図鑑の追加
-- **02-16 00:54**: URL生成ロジックを変更し、URL生成時のURLを短縮
-- **02-16 00:22**: URL生成ロジック変更
-- **02-15 10:35**: CSSで位置調整
-- **02-15 10:31**: スマホ対応強化
