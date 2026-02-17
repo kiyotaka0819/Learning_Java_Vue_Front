@@ -337,6 +337,9 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
+/* =========================================
+   1. 基本レイアウト・背景
+   ========================================= */
 .os-root {
   position: fixed;
   inset: 0;
@@ -349,12 +352,17 @@ onUnmounted(() => {
   font-family:
     -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
+
 .desktop {
   width: 100%;
   height: 100%;
   background: radial-gradient(circle at top left, #7105ec, #ff3d77);
   position: relative;
 }
+
+/* =========================================
+   2. 上部ツールバー (Menu Bar)
+   ========================================= */
 .top-bar {
   height: 32px;
   background: rgba(255, 255, 255, 0.15);
@@ -369,14 +377,17 @@ onUnmounted(() => {
   z-index: 10001;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
+
 .top-bar-left {
   display: flex;
   gap: 15px;
   align-items: center;
 }
+
 .app-name {
   font-weight: bold;
 }
+
 .logout-icon {
   cursor: pointer;
   padding: 4px;
@@ -385,14 +396,16 @@ onUnmounted(() => {
   transition: all 0.2s ease;
   color: #fff;
 }
+
 .logout-icon:hover {
   background: rgba(255, 255, 255, 0.2);
   border-radius: 6px;
   color: #ff5f56;
 }
-.top-bar-right {
-  font-variant-numeric: tabular-nums;
-}
+
+/* =========================================
+   3. ウィンドウ・タイトルバー (Windows)
+   ========================================= */
 .window {
   position: absolute;
   display: flex;
@@ -403,16 +416,19 @@ onUnmounted(() => {
   border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.3);
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+  /* window自体がスクロールするとタイトルバーが逃げるので隠す */
   overflow: hidden;
   transition:
     transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
     opacity 0.3s ease;
 }
+
 .window.is-max {
   border-radius: 0;
   border: none;
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
+
 .title-bar {
   height: 38px;
   display: flex;
@@ -421,23 +437,27 @@ onUnmounted(() => {
   background: rgba(0, 0, 0, 0.05);
   cursor: pointer;
 }
+
 .controls {
   display: flex;
   gap: 8px;
   width: 50px;
 }
+
 .dot {
   width: 12px;
   height: 12px;
   border-radius: 50%;
   cursor: pointer;
 }
+
 .red {
   background: #ff5f56;
 }
 .green {
   background: #27c93f;
 }
+
 .title-text {
   flex: 1;
   text-align: center;
@@ -449,39 +469,72 @@ onUnmounted(() => {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+/* =========================================
+   4. コンテンツエリア & アプリ中身
+   ========================================= */
 .content-area {
   flex: 1;
   position: relative;
   background: transparent;
-  overflow: hidden;
+  /* ここでスクロールを許可 */
+  overflow-y: auto;
+  overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
 }
+
 .iframe-guard {
   position: absolute;
   inset: 0;
   z-index: 9999;
   background: transparent;
 }
+
 .iframe {
   width: 100%;
   height: 100%;
   border: none;
   background: #fff;
+  display: block;
 }
-.resizer {
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  width: 20px;
-  height: 20px;
-  cursor: nwse-resize;
-  z-index: 1000;
-  background: linear-gradient(
-    135deg,
-    transparent 10px,
-    rgba(0, 0, 0, 0.1) 10px
-  );
+
+.component-content {
+  min-height: 100%;
+  width: 100%;
 }
+
+/* =========================================
+   5. ★モダン・スクロールバー (全アプリ共通)
+   ========================================= */
+/* エディター内部などの子要素すべてに適用 */
+.content-area *,
+.content-area::-webkit-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+}
+
+/* Chrome/Safari系: 細くて丸いデザイン */
+.content-area ::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.content-area ::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.content-area ::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+}
+
+.content-area *:hover::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.25);
+}
+
+/* =========================================
+   6. ドック & メニュー (Dock & Folders)
+   ========================================= */
 .dock-container {
   position: absolute;
   bottom: 20px;
@@ -491,6 +544,7 @@ onUnmounted(() => {
   z-index: 999999;
   pointer-events: none;
 }
+
 .folder-backdrop {
   position: fixed;
   inset: 0;
@@ -498,6 +552,7 @@ onUnmounted(() => {
   background: transparent;
   pointer-events: auto;
 }
+
 .dock {
   pointer-events: auto;
   background: rgba(255, 255, 255, 0.2);
@@ -510,6 +565,7 @@ onUnmounted(() => {
   border: 1px solid rgba(255, 255, 255, 0.2);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
 }
+
 .dock-item {
   width: 55px;
   height: 55px;
@@ -524,10 +580,12 @@ onUnmounted(() => {
     transform 0.2s ease,
     background 0.2s ease;
 }
+
 .dock-item:hover {
   transform: translateY(-5px);
   background: rgba(255, 255, 255, 0.25);
 }
+
 .dock-icon-svg {
   color: #fff;
 }
@@ -537,39 +595,65 @@ onUnmounted(() => {
   color: #fff;
   margin-top: 2px;
 }
+
+/* 改善：ドックのフォルダメニュー */
 .folder-menu {
   position: absolute;
   bottom: 75px;
   left: 50%;
   transform: translateX(-50%);
-  background: rgba(255, 255, 255, 0.4);
-  backdrop-filter: blur(30px);
-  -webkit-backdrop-filter: blur(30px);
-  border-radius: 15px;
-  padding: 10px;
+  /* 背景を白っぽくして文字を黒くし、視認性を大幅アップ */
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+  border-radius: 18px;
+  padding: 8px;
   display: flex;
   flex-direction: column;
-  gap: 5px;
-  min-width: 160px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  gap: 2px;
+  min-width: 180px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.5);
 }
+
 .folder-item {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 10px;
-  border-radius: 8px;
-  color: #fff;
+  padding: 10px 14px;
+  border-radius: 10px;
+  color: #222; /* テキストを濃く */
   font-size: 14px;
-  transition: background 0.2s ease;
-}
-.folder-item:hover {
-  background: rgba(255, 255, 255, 0.2);
-}
-.folder-item-title {
   font-weight: 500;
+  transition: all 0.2s ease;
 }
+
+.folder-item:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.folder-item svg {
+  color: #555;
+}
+
+/* =========================================
+   7. その他パーツ & レスポンシブ
+   ========================================= */
+.resizer {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 20px;
+  height: 20px;
+  cursor: nwse-resize;
+  z-index: 1000;
+  background: linear-gradient(
+    135deg,
+    transparent 10px,
+    rgba(0, 0, 0, 0.1) 10px
+  );
+}
+
 @media (max-width: 600px) {
   .window {
     border-radius: 0;
@@ -591,6 +675,8 @@ onUnmounted(() => {
     font-size: 11px;
   }
 }
+
+/* アニメーション設定 */
 .genie-enter-active,
 .genie-leave-active {
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
