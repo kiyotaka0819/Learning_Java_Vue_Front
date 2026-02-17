@@ -2,23 +2,22 @@
 import { ref, reactive, markRaw, onMounted, onUnmounted } from 'vue';
 import {
   Power,
-  Search, // ポケモン図鑑
-  Contact, // 名刺アプリ
-  FileText, // README
-  CloudSun, // 天気
-  Youtube, // YouTube
-  Map, // GoogleMap
-  Code2, // Playground
-  Settings, // 設定
-  Monitor, // OSロゴ用
-  Layers, // カテゴリ: システム
-  Briefcase, // カテゴリ: ワーク
-  PlayCircle // カテゴリ: メディア
+  Search,
+  Contact,
+  FileText,
+  CloudSun,
+  Play,
+  Map as MapIcon,
+  Code2,
+  Settings,
+  Monitor,
+  Layers,
+  Wrench,
+  PlayCircle
 } from 'lucide-vue-next';
 import { useRouter } from 'vue-router';
 import consts from './jibun_os/consts.json';
 
-// --- 自作アプリコンポーネントのインポート ---
 import PokemonZukan from './pokemon_zukan/PokemonZukan.vue';
 import BusinessCardApp from './business_card/BusinessCardApp.vue';
 import ReadMeEditor from './jibun_os/ReadMeEditor.vue';
@@ -26,23 +25,17 @@ import WeatherApp from './weather/WeatherApp.vue';
 
 const router = useRouter();
 
-/**
- * アイコンマップ
- */
 const iconMap: Record<string, any> = {
   pokedex: Search,
   'business-card': Contact,
+  'code-editor': Code2,
   'readme-editor': FileText,
+  Map: MapIcon,
   weather: CloudSun,
-  youtube: Youtube,
-  'google-maps': Map,
-  playground: Code2,
-  tools: Settings,
-  // カテゴリ用
-  'cat-work': Briefcase,
-  'cat-media': PlayCircle,
-  'cat-system': Layers,
-  'cat-tool': Settings
+  'youtube-app': Play,
+  utility: Layers,
+  tools: Wrench,
+  entertainment: PlayCircle
 };
 
 const componentMap: Record<string, any> = {
@@ -61,6 +54,11 @@ const windows = reactive(
     return {
       ...win,
       isMaximized: isMax,
+      // 最大化解除時のサイズを保持するプロパティを追加
+      prevX: win.x,
+      prevY: win.y,
+      prevW: win.width,
+      prevH: win.height,
       x: isMax ? 0 : win.x,
       y: isMax ? 32 : win.y,
       width: isMax ? window.innerWidth : win.width,
@@ -71,15 +69,42 @@ const windows = reactive(
   })
 );
 
+/**
+ * 最大化・元に戻す処理
+ */
+const maximizeWin = (win: any) => {
+  if (isMobile()) return; // スマホは常に全画面なので無視
+
+  if (!win.isMaximized) {
+    // 現在の状態を保存
+    win.prevX = win.x;
+    win.prevY = win.y;
+    win.prevW = win.width;
+    win.prevH = win.height;
+    // 全画面へ
+    win.x = 0;
+    win.y = 32;
+    win.width = window.innerWidth;
+    win.height = window.innerHeight - 32;
+    win.isMaximized = true;
+  } else {
+    // 保存した状態に戻す
+    win.x = win.prevX;
+    win.y = win.prevY;
+    win.width = win.prevW;
+    win.height = win.prevH;
+    win.isMaximized = false;
+  }
+};
+
 const openFolderId = ref<string | null>(null);
 const maxZ = ref(100);
 const isDragging = ref(false);
 const isResizing = ref(false);
 
 const getCoords = (e: MouseEvent | TouchEvent) => {
-  if ('touches' in e && e.touches.length > 0) {
+  if ('touches' in e && e.touches.length > 0)
     return { x: e.touches[0].clientX, y: e.touches[0].clientY };
-  }
   return { x: (e as MouseEvent).clientX, y: (e as MouseEvent).clientY };
 };
 
@@ -90,14 +115,12 @@ const startDrag = (win: any, e: MouseEvent | TouchEvent) => {
   const { x, y } = getCoords(e);
   const startX = x - win.x;
   const startY = y - win.y;
-
   const onMove = (me: MouseEvent | TouchEvent) => {
     if (me.cancelable) me.preventDefault();
     const { x: curX, y: curY } = getCoords(me);
     win.x = curX - startX;
     win.y = curY - startY;
   };
-
   const onEnd = () => {
     isDragging.value = false;
     document.removeEventListener('mousemove', onMove);
@@ -118,14 +141,12 @@ const startResize = (win: any, e: MouseEvent | TouchEvent) => {
   const { x: startX, y: startY } = getCoords(e);
   const startW = win.width;
   const startH = win.height;
-
   const onMove = (me: MouseEvent | TouchEvent) => {
     if (me.cancelable) me.preventDefault();
     const { x: curX, y: curY } = getCoords(me);
     win.width = Math.max(200, startW + (curX - startX));
     win.height = Math.max(150, startH + (curY - startY));
   };
-
   const onEnd = () => {
     isResizing.value = false;
     document.removeEventListener('mousemove', onMove);
@@ -163,13 +184,8 @@ const toggleWin = (id: string) => {
 const toggleFolder = (id: string) => {
   openFolderId.value = openFolderId.value === id ? null : id;
 };
-
 const getWinById = (id: string) => windows.find((w) => w.id === id);
 const logout = () => router.push('/apps');
-
-/**
- * フォルダメニュー外クリック判定：スマホ対応
- */
 const closeFolder = (e: MouseEvent | TouchEvent) => {
   if (!(e.target as HTMLElement).closest('.dock-item'))
     openFolderId.value = null;
@@ -177,7 +193,7 @@ const closeFolder = (e: MouseEvent | TouchEvent) => {
 
 onMounted(() => {
   document.addEventListener('mousedown', closeFolder);
-  document.addEventListener('touchstart', closeFolder); // スマホ用
+  document.addEventListener('touchstart', closeFolder);
 });
 onUnmounted(() => {
   document.removeEventListener('mousedown', closeFolder);
@@ -192,9 +208,9 @@ onUnmounted(() => {
         <div class="top-bar-left">
           <Monitor :size="16" />
           <span class="app-name">Jibun OS</span>
-          <span class="logout-icon" @click="logout">
-            <Power :size="18" stroke-width="2.5" />
-          </span>
+          <span class="logout-icon" @click="logout"
+            ><Power :size="18" stroke-width="2.5"
+          /></span>
         </div>
         <div class="top-bar-right">Feb 17 10:30 AM</div>
       </div>
@@ -222,7 +238,11 @@ onUnmounted(() => {
             >
               <div class="controls">
                 <span class="dot red" @click.stop="win.isOpen = false"></span>
-                <span v-if="!isMobile()" class="dot green"></span>
+                <span
+                  v-if="!isMobile()"
+                  class="dot green"
+                  @click.stop="maximizeWin(win)"
+                ></span>
               </div>
               <div class="title-text">
                 <component
@@ -233,7 +253,6 @@ onUnmounted(() => {
                 {{ win.title }}
               </div>
             </div>
-
             <div class="content-area">
               <div v-if="isDragging || isResizing" class="iframe-guard"></div>
               <component
@@ -259,7 +278,6 @@ onUnmounted(() => {
                 allowfullscreen
               ></iframe>
             </div>
-
             <div
               v-if="!isMobile() && !win.isMaximized"
               class="resizer"
@@ -284,12 +302,11 @@ onUnmounted(() => {
             @click.stop="toggleFolder(cat.id)"
           >
             <component
-              :is="iconMap[cat.id] || Briefcase"
+              :is="iconMap[cat.id] || Settings"
               :size="22"
               class="dock-icon-svg"
             />
             <div class="dock-label">{{ cat.title }}</div>
-
             <Transition name="pop">
               <div
                 v-if="openFolderId === cat.id"
@@ -332,18 +349,12 @@ onUnmounted(() => {
   font-family:
     -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
-
 .desktop {
   width: 100%;
   height: 100%;
-  background: radial-gradient(
-    circle at top left,
-    #7105ec,
-    #ff3d77
-  ); /* 原型の色 */
+  background: radial-gradient(circle at top left, #7105ec, #ff3d77);
   position: relative;
 }
-
 .top-bar {
   height: 32px;
   background: rgba(255, 255, 255, 0.15);
@@ -358,7 +369,6 @@ onUnmounted(() => {
   z-index: 10001;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
-
 .top-bar-left {
   display: flex;
   gap: 15px;
@@ -383,7 +393,6 @@ onUnmounted(() => {
 .top-bar-right {
   font-variant-numeric: tabular-nums;
 }
-
 .window {
   position: absolute;
   display: flex;
@@ -399,20 +408,18 @@ onUnmounted(() => {
     transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
     opacity 0.3s ease;
 }
-
 .window.is-max {
   border-radius: 0;
   border: none;
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
-
 .title-bar {
   height: 38px;
   display: flex;
   align-items: center;
   padding: 0 12px;
   background: rgba(0, 0, 0, 0.05);
-  cursor: grab;
+  cursor: pointer;
 }
 .controls {
   display: flex;
@@ -442,12 +449,11 @@ onUnmounted(() => {
   overflow: hidden;
   text-overflow: ellipsis;
 }
-
 .content-area {
   flex: 1;
   position: relative;
   background: transparent;
-  overflow: auto;
+  overflow: hidden;
   -webkit-overflow-scrolling: touch;
 }
 .iframe-guard {
@@ -476,7 +482,6 @@ onUnmounted(() => {
     rgba(0, 0, 0, 0.1) 10px
   );
 }
-
 .dock-container {
   position: absolute;
   bottom: 20px;
@@ -505,7 +510,6 @@ onUnmounted(() => {
   border: 1px solid rgba(255, 255, 255, 0.2);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
 }
-
 .dock-item {
   width: 55px;
   height: 55px;
@@ -527,14 +531,12 @@ onUnmounted(() => {
 .dock-icon-svg {
   color: #fff;
 }
-
 .dock-label {
   font-size: 8px;
   font-weight: bold;
   color: #fff;
   margin-top: 2px;
 }
-
 .folder-menu {
   position: absolute;
   bottom: 75px;
@@ -568,7 +570,6 @@ onUnmounted(() => {
 .folder-item-title {
   font-weight: 500;
 }
-
 @media (max-width: 600px) {
   .window {
     border-radius: 0;
@@ -590,7 +591,6 @@ onUnmounted(() => {
     font-size: 11px;
   }
 }
-
 .genie-enter-active,
 .genie-leave-active {
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
