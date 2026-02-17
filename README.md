@@ -31,6 +31,8 @@ Vue3で構築した仮想デスクトップ環境。
 
 ---
 ## 更新履歴
+- **02-17 11:36**: Youtube機能追加
+- **02-16 08:49**: chore: update readme log [skip ci]
 - **02-16 17:49**: Merge branch 'main' of https://github.com/kiyotaka0819/learning_java_vue_front.git
 - **02-16 17:48**: JibunOSのレスポンシブ対応
 - **02-16 08:39**: chore: update readme log [skip ci]
@@ -54,5 +56,3 @@ Vue3で構築した仮想デスクトップ環境。
 - **02-12 00:42**: デプロイ設定変更
 - **02-10 06:33**: フォーマッターと一部CSS変更
 - **02-10 06:11**: 睡眠時間計測アプリ追加
-- **02-03 01:42**: 切り替え時をシームレスに
-- **02-03 01:29**: deploy資材に404を追加
