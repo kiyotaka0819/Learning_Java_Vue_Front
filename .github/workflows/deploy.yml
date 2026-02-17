@@ -1,74 +1,31 @@
-name: Deploy and Update README
+update-readme:
+  needs: build-and-deploy
+  if: github.actor != 'github-actions[bot]'
+  runs-on: ubuntu-latest
+  steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        # 常に最新のmainブランチをチェックアウトする
+        ref: main
 
-on:
-  push:
-    branches: [main]
-    # READMEの変更「だけ」がPushされた時はActionを動かさない（無駄なコミット防止）
-    paths-ignore:
-      - 'README.md'
+    - name: Update README Section
+      run: |
+        git pull origin main
 
-permissions:
-  contents: write
-  pages: write
-  id-token: write
+        echo "## 更新履歴" > updates.tmp
+        git log -25 --pretty=format:"- **%ad**: %s" --date=format:"%m-%d %H:%M" >> updates.tmp         
+        if grep -q "## 更新履歴" README.md; then
+          sed -i '/## 更新履歴/,$d' README.md
+        fi
+        cat updates.tmp >> README.md
+        rm updates.tmp
 
-jobs:
-  # --- ジョブ1: ビルドとデプロイ ---
-  build-and-deploy:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Set up Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
-      - name: Install and Build
-        run: |
-          npm install
-          npm run build
-        env:
-          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
-          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
-
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: dist
-
-      - name: Deploy to GitHub Pages
-        uses: actions/deploy-pages@v4
-
-  # --- ジョブ2: READMEの更新履歴をアップデート ---
-  update-readme:
-    # デプロイが成功した後に実行する
-    needs: build-and-deploy
-    # Actions自身によるコミットを念のため除外
-    if: github.actor != 'github-actions[bot]'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Update README Section
-        run: |
-          echo "## 更新履歴" > updates.tmp
-          git log -25 --pretty=format:"- **%ad**: %s" --date=format:"%m-%d %H:%M" >> updates.tmp         
-          if grep -q "## 更新履歴" README.md; then
-            sed -i '/## 更新履歴/,$d' README.md
-          fi
-
-          cat updates.tmp >> README.md
-          rm updates.tmp
-
-      - name: Commit and Push changes
-        run: |
-          git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
-          git add README.md
-          git commit -m "chore: update readme log [skip ci]"
-          git push
+    - name: Commit and Push changes
+      run: |
+        git config --local user.email "github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "github-actions[bot]"
+        git add README.md
+        git commit -m "chore: update readme log [skip ci]" || exit 0 
+        git push origin main
