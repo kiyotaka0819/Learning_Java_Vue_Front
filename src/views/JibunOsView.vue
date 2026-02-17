@@ -426,12 +426,13 @@ onUnmounted(() => {
    3. ウィンドウ・タイトルバー (Windows)
    ========================================= */
 .window {
+  will-change: transform, left, top, width, height;
   position: absolute;
   display: flex;
   flex-direction: column;
   background: rgba(255, 255, 255, 0.5);
-  backdrop-filter: blur(20px) saturate(150%);
-  -webkit-backdrop-filter: blur(20px) saturate(150%);
+  backdrop-filter: blur(10px) saturate(150%);
+  -webkit-backdrop-filter: blur(10px) saturate(150%);
   border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.3);
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
