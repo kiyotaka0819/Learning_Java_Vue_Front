@@ -31,6 +31,9 @@ Vue3で構築した仮想デスクトップ環境。
 
 ---
 ## 更新履歴
+- **02-17 17:52**: Merge branch 'main' of https://github.com/kiyotaka0819/learning_java_vue_front.git
+- **02-17 17:47**: Youtubeクローズ時に動作を止めるように変更
+- **02-17 08:31**: chore: update readme log [skip ci]
 - **02-17 17:30**: デプロイ条件変更
 - **02-17 17:28**: Merge branch 'main' of https://github.com/kiyotaka0819/learning_java_vue_front.git
 - **02-17 17:27**: デプロイ時条件変更
@@ -53,6 +56,3 @@ Vue3で構築した仮想デスクトップ環境。
 - **02-16 06:11**: chore: update readme log [skip ci]
 - **02-16 06:10**: Merge branch 'main' of https://github.com/kiyotaka0819/Learning_Java_Vue_Front
 - **02-16 06:09**: コミットCI/CD化、再調整
-- **02-16 06:04**: chore: update readme log [skip ci]
-- **02-16 06:04**: 仮想OSの追加、READMEのCI/CD化
-- **02-16 02:11**: ポケモン図鑑の追加
