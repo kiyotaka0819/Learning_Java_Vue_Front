@@ -2,7 +2,10 @@ name: Deploy and Update README
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
+    # READMEの変更「だけ」がPushされた時はActionを動かさない（無駄なコミット防止）
+    paths-ignore:
+      - 'README.md'
 
 permissions:
   contents: write
@@ -40,26 +43,28 @@ jobs:
 
   # --- ジョブ2: READMEの更新履歴をアップデート ---
   update-readme:
-    if: "!contains(github.event.head_commit.message, 'chore: update readme log')"
+    # デプロイが成功した後に実行する
+    needs: build-and-deploy
+    # Actions自身によるコミットを念のため除外
+    if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0 
+          fetch-depth: 0
 
       - name: Update README Section
         run: |
           echo "## 更新履歴" > updates.tmp
-          git log -25 --pretty=format:"- **%ad**: %s" --date=format:"%m-%d %H:%M" >> updates.tmp
-          
+          git log -25 --pretty=format:"- **%ad**: %s" --date=format:"%m-%d %H:%M" >> updates.tmp         
           if grep -q "## 更新履歴" README.md; then
             sed -i '/## 更新履歴/,$d' README.md
           fi
-          
+
           cat updates.tmp >> README.md
           rm updates.tmp
-          
+
       - name: Commit and Push changes
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
