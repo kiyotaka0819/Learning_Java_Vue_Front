@@ -31,6 +31,10 @@ Vue3で構築した仮想デスクトップ環境。
 
 ---
 ## 更新履歴
+- **02-17 12:08**: Merge branch 'main' of https://github.com/kiyotaka0819/learning_java_vue_front.git
+- **02-17 12:05**: CI.CDの無限ループ対策
+- **02-17 11:54**: CSS調整と最大化挙動の安定
+- **02-17 02:36**: chore: update readme log [skip ci]
 - **02-17 11:36**: Youtube機能追加
 - **02-16 08:49**: chore: update readme log [skip ci]
 - **02-16 17:49**: Merge branch 'main' of https://github.com/kiyotaka0819/learning_java_vue_front.git
@@ -52,7 +56,3 @@ Vue3で構築した仮想デスクトップ環境。
 - **02-15 10:05**: レスポンシブ対応調整
 - **02-15 09:48**: レスポンシブ対応調整
 - **02-15 09:33**: レスポンシブ対応
-- **02-13 08:43**: 名刺アプリ追加
-- **02-12 00:42**: デプロイ設定変更
-- **02-10 06:33**: フォーマッターと一部CSS変更
-- **02-10 06:11**: 睡眠時間計測アプリ追加
