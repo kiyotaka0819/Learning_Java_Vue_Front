@@ -164,19 +164,33 @@ const focusWin = (win: any) => {
   win.z = ++maxZ.value;
 };
 
+/**
+ * ウィンドウの表示・非表示を切り替える
+ * 閉じるときにリソースを解放
+ */
 const toggleWin = (id: string) => {
   const win = windows.find((w) => w.id === id);
-  if (win) {
-    win.isOpen = !win.isOpen;
-    if (win.isOpen) {
-      win.z = ++maxZ.value;
-      if (isMobile()) {
-        win.isMaximized = true;
-        win.x = 0;
-        win.y = 32;
-        win.width = window.innerWidth;
-        win.height = window.innerHeight - 32;
-      }
+  if (!win) return;
+  if (win.isOpen) {
+    // 【クローズ処理】リソース解放
+    if (win.type === 'iframe') {
+      win._prevContent = win.content;
+      win.content = '';
+    }
+    win.isOpen = false;
+  } else {
+    win.isOpen = true;
+    win.z = ++maxZ.value;
+    if (win.type === 'iframe' && win._prevContent) {
+      win.content = win._prevContent;
+    }
+    // モバイルなら全画面
+    if (isMobile()) {
+      win.isMaximized = true;
+      win.x = 0;
+      win.y = 32;
+      win.width = window.innerWidth;
+      win.height = window.innerHeight - 32;
     }
   }
 };
@@ -208,9 +222,9 @@ onUnmounted(() => {
         <div class="top-bar-left">
           <Monitor :size="16" />
           <span class="app-name">Jibun OS</span>
-          <span class="logout-icon" @click="logout"
-            ><Power :size="18" stroke-width="2.5"
-          /></span>
+          <span class="logout-icon" @click="logout">
+            <Power :size="18" stroke-width="2.5" />
+          </span>
         </div>
         <div class="top-bar-right">Feb 17 10:30 AM</div>
       </div>
@@ -218,7 +232,7 @@ onUnmounted(() => {
       <div v-for="win in windows" :key="win.id">
         <Transition name="genie">
           <div
-            v-show="win.isOpen"
+            v-if="win.isOpen"
             class="window"
             :class="{ 'is-max': win.isMaximized }"
             @mousedown="focusWin(win)"
@@ -237,7 +251,7 @@ onUnmounted(() => {
               @touchstart="startDrag(win, $event)"
             >
               <div class="controls">
-                <span class="dot red" @click.stop="win.isOpen = false"></span>
+                <span class="dot red" @click.stop="toggleWin(win.id)"></span>
                 <span
                   v-if="!isMobile()"
                   class="dot green"
@@ -253,13 +267,16 @@ onUnmounted(() => {
                 {{ win.title }}
               </div>
             </div>
+
             <div class="content-area">
               <div v-if="isDragging || isResizing" class="iframe-guard"></div>
+
               <component
                 v-if="win.type === 'component'"
                 :is="win.content"
                 v-bind="win.props"
               />
+
               <iframe
                 v-else-if="win.type === 'iframe'"
                 :src="win.content"
@@ -278,6 +295,7 @@ onUnmounted(() => {
                 allowfullscreen
               ></iframe>
             </div>
+
             <div
               v-if="!isMobile() && !win.isMaximized"
               class="resizer"
@@ -294,6 +312,7 @@ onUnmounted(() => {
           class="folder-backdrop"
           @click="openFolderId = null"
         ></div>
+
         <div class="dock">
           <div
             v-for="cat in consts.categories"
@@ -307,6 +326,7 @@ onUnmounted(() => {
               class="dock-icon-svg"
             />
             <div class="dock-label">{{ cat.title }}</div>
+
             <Transition name="pop">
               <div
                 v-if="openFolderId === cat.id"
@@ -335,7 +355,6 @@ onUnmounted(() => {
     </div>
   </div>
 </template>
-
 <style scoped>
 /* =========================================
    1. 基本レイアウト・背景
