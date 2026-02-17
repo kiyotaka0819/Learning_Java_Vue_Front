@@ -31,6 +31,8 @@ Vue3で構築した仮想デスクトップ環境。
 
 ---
 ## 更新履歴
+- **02-17 18:00**: ぼかし調整、メモリ節約
+- **02-17 08:52**: chore: update readme log [skip ci]
 - **02-17 17:52**: Merge branch 'main' of https://github.com/kiyotaka0819/learning_java_vue_front.git
 - **02-17 17:47**: Youtubeクローズ時に動作を止めるように変更
 - **02-17 08:31**: chore: update readme log [skip ci]
@@ -54,5 +56,3 @@ Vue3で構築した仮想デスクトップ環境。
 - **02-16 07:27**: chore: update readme log [skip ci]
 - **02-16 16:27**: Map機能の追加
 - **02-16 06:11**: chore: update readme log [skip ci]
-- **02-16 06:10**: Merge branch 'main' of https://github.com/kiyotaka0819/Learning_Java_Vue_Front
-- **02-16 06:09**: コミットCI/CD化、再調整
