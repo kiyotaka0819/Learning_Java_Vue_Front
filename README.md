@@ -31,6 +31,8 @@ Vue3で構築した仮想デスクトップ環境。
 
 ---
 ## 更新履歴
+- **02-18 17:38**: envのひな形を保存
+- **02-18 07:36**: chore: update readme log [skip ci]
 - **02-18 16:35**: 一部調整のため変更
 - **02-17 09:00**: chore: update readme log [skip ci]
 - **02-17 18:00**: ぼかし調整、メモリ節約
@@ -54,5 +56,3 @@ Vue3で構築した仮想デスクトップ環境。
 - **02-16 17:49**: Merge branch 'main' of https://github.com/kiyotaka0819/learning_java_vue_front.git
 - **02-16 17:48**: JibunOSのレスポンシブ対応
 - **02-16 08:39**: chore: update readme log [skip ci]
-- **02-16 17:39**: OS表示更新
-- **02-16 07:27**: chore: update readme log [skip ci]
