@@ -14,6 +14,7 @@ import SleepChecker from './views/sleep_checker/SleepChecker.vue';
 import BusinessCardApp from './views/business_card/BusinessCardApp.vue';
 import PokemonZukan from './views/pokemon_zukan/PokemonZukan.vue';
 import JibunOsView from './views/JibunOsView.vue';
+import QuizProject from './views/quiz_project/QuizProject.vue';
 
 /**
  * ルーティング定義
@@ -56,7 +57,9 @@ const routes = [
     path: '/jibun_os',
     name: 'JibunOsView',
     component: () => import('./views/JibunOsView.vue')
-  }
+  },
+  // Javaとの接続を行うクイズアプリ
+  { path: '/quiz_project', component: QuizProject },
 ];
 
 const router = createRouter({

@@ -92,6 +92,13 @@
         "tech": ["TypeScript", "Vue3", "Window Management Logic"],
         "url": "https://kiyotaka0819.github.io/Learning_Java_Vue_Front/jibun_os",
         "to": "/jibun_os"
+      },
+      {
+        "name": "学習特化型クイズアプリ",
+        "description": "実務を想定した Java (Spring Boot) との連携を主眼に置いたクイズシステム。単なる解答機能だけでなく、『自信なし』チェックによる独自の復習アルゴリズムを実装し、弱点克服をサポート。",
+        "tech": ["TypeScript", "Vue3", "Spring Boot", "PostgreSQL", "Supabase", "REST API"],
+        "url": "https://kiyotaka0819.github.io/Learning_Java_Vue_Front/quiz_project",
+        "to": "/quiz_project"
       }
       ]
       },
@@ -115,8 +122,8 @@
     "skills": ["Vue.js", "JavaScript", "HTML/CSS", "Java", "Python", "PostgreSQL"],
     "learning": [
       {
-        "category": "Java / バックエンド",
-        "detail": "実務にて、Vueのサーバーサイド連携としてSpring Bootを用いる。現在はフロントエンド側としてJavaとの連携を学習中"
+        "category": "Java / フルスタック開発",
+        "detail": "Spring Bootを用いたREST API開発と、Vue3を組み合わせたフルスタックなWebアプリケーション構築を実践中。RDB（PostgreSQL）の設計からフロントのUI実装まで一貫した開発能力を磨いています。"
       },
       {
         "category": "開発のモットー",
