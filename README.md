@@ -31,6 +31,8 @@ Vue3で構築した仮想デスクトップ環境。
 
 ---
 ## 更新履歴
+- **04-04 22:15**: 居酒屋テトリスアプリの追加
+- **03-30 12:34**: chore: update readme log [skip ci]
 - **03-30 21:33**: Javaとの繋ぎ込みのテスト
 - **02-18 08:38**: chore: update readme log [skip ci]
 - **02-18 17:38**: envのひな形を保存
@@ -54,5 +56,3 @@ Vue3で構築した仮想デスクトップ環境。
 - **02-17 11:54**: CSS調整と最大化挙動の安定
 - **02-17 02:36**: chore: update readme log [skip ci]
 - **02-17 11:36**: Youtube機能追加
-- **02-16 08:49**: chore: update readme log [skip ci]
-- **02-16 17:49**: Merge branch 'main' of https://github.com/kiyotaka0819/learning_java_vue_front.git
