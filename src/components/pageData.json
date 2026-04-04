@@ -99,6 +99,13 @@
         "tech": ["TypeScript", "Vue3", "Spring Boot", "PostgreSQL", "Supabase", "REST API"],
         "url": "https://kiyotaka0819.github.io/Learning_Java_Vue_Front/quiz_project",
         "to": "/quiz_project"
+      },
+      {
+        "name": "居酒屋テトリス",
+        "description": "Vue3 (Composition API) で構築した、飲食とパズルを融合させたゲームアプリ。\n『完食してブロックを貯める』という独自システムにより、実生活の食事管理とゲーム性をリンクさせました。コンポーネント分割とロジックの抽出（Composable）を徹底し、高い保守性を実現しています。",
+        "tech": ["TypeScript", "Vue3", "Composition API", "LocalStorage", "Custom Composable"],
+        "url": "https://kiyotaka0819.github.io/Learning_Java_Vue_Front/izakaya_tetris",
+        "to": "/izakaya_tetris"
       }
       ]
       },

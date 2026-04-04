@@ -15,6 +15,7 @@ import BusinessCardApp from './views/business_card/BusinessCardApp.vue';
 import PokemonZukan from './views/pokemon_zukan/PokemonZukan.vue';
 import JibunOsView from './views/JibunOsView.vue';
 import QuizProject from './views/quiz_project/QuizProject.vue';
+import IzakayaTetris from './views/izakaya_tetris/IzakayaTetris.vue';
 
 /**
  * ルーティング定義
@@ -60,6 +61,11 @@ const routes = [
   },
   // Javaとの接続を行うクイズアプリ
   { path: '/quiz_project', component: QuizProject },
+  // 食べた分をブロックとして取り扱うテトリスアプリ
+  { 
+    path: '/izakaya_tetris', 
+    component: () => import('./views/izakaya_tetris/IzakayaTetris.vue') 
+  },
 ];
 
 const router = createRouter({

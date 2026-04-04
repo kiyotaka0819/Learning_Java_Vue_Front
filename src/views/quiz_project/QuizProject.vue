@@ -2,33 +2,61 @@
 import { ref, onMounted } from 'vue';
 
 // Spring Bootから受け取るデータの型定義
-interface HelloResponse {
-  message: string;
+// バックエンドのQuizEntityと合わせる
+interface Quiz {
+  id: number;
+  question: string;
+  optionA: string;
+  optionB: string;
+  optionC: string;
+  optionD: string;
+  answer: string;
+  explanation: string;
+  category: string;
+  needsReview: boolean;
 }
 
+// 複数のクイズを格納する配列
+const quizzes = ref<Quiz[]>([]);
+const loading = ref(true);
 const message = ref<string>('読み込み中...');
 const errorMsg = ref<string | null>(null);
 
-onMounted(async () => {
+  onMounted(async () => {
   try {
-    // Spring Boot（8080ポート）を叩く
-    const response = await fetch('http://localhost:8080/api/hello');
-    if (!response.ok) throw new Error('サーバーに繋がりません');
+    const response = await fetch('http://localhost:8080/api/quizzes');
+    if (!response.ok) throw new Error('DB接続に失敗しました。');
     
-    const data: HelloResponse = await response.json();
-    message.value = data.message;
+    const data = await response.json();
+    quizzes.value = data; // ここで受け子にセット
   } catch (e) {
-    errorMsg.value = '接続エラー発生。Spring Boot側でCORS許可確認';
+    errorMsg.value = 'Javaが動いているか、CORS許可されているか確認してください。';
     console.error(e);
+  } finally {
+    loading.value = false;
   }
 });
 </script>
 
 <template>
   <div class="quiz-container">
-    <h1>クイズアプリ</h1>
-    <p v-if="!errorMsg">サーバーからの返事: {{ message }}</p>
-    <p v-else style="color: red;">{{ errorMsg }}</p>
+    <h1>学習特化型クイズ</h1>
+    
+    <div v-if="loading">読み込み中...</div>
+    
+    <div v-else-if="quizzes.length > 0">
+      <div v-for="quiz in quizzes" :key="quiz.id" class="quiz-card">
+        <h3>問{{ quiz.id }}: {{ quiz.question }}</h3>
+        <ul>
+          <li>A: {{ quiz.optionA }}</li>
+          <li>B: {{ quiz.optionB }}</li>
+          <li>C: {{ quiz.optionC }}</li>
+          <li>D: {{ quiz.optionD }}</li>
+        </ul>
+        <p class="answer-preview">正解: {{ quiz.answer }}</p>
+      </div>
+    </div>
+    <div v-else>クイズが見つかりません。</div>
   </div>
 </template>
 
